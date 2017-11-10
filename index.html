@@ -1,0 +1,82 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <script src="https://unpkg.com/vue"></script>
+    <script src="js/form-urlencode.js"></script>
+    <link rel="stylesheet" href="css/main.css">
+
+</head>
+
+<body>
+    <div id="invoice-app">
+
+        <button v-on:click="getInvoices">Get invoices</button>
+        <span>Select invoice to copy:</span>
+        <select id="invoice-select" v-model="selectedInvoiceId">
+            <option v-for="invoice in invoices" v-bind:value="invoice.id">
+                {{ invoice.invoiceNumber }}
+            </option>
+        </select>
+        <button v-on:click="getInvoice">Copy</button>
+
+        <br />
+
+        <span>{{ invoice }}</span>
+
+        <br />
+
+        <span>Invoice lines:</span>
+        <table id="invoice-lines">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Id</th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Text</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(invoiceLine, index) in invoiceLines" :key="invoiceLine.id">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ invoiceLine.id }}</td>
+                    <td>{{ invoiceLine.product.name }}</td>
+                    <td>{{ invoiceLine.product.price }} € / {{ invoiceLine.product.unit }}</td>
+                    <td>
+                        <input type="text" v-model="invoiceLine.quantity" />
+                    </td>
+                    <td>
+                        <input type="text" v-model="invoiceLine.text" />
+                    </td>
+                    <td>{{ invoiceLine.total() }} €</td>
+                    <td>
+                        <button v-on:click="removeInvoiceLine(index)">Remove</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <select id="product-select" v-model="selectedProduct">
+            <option v-for="product in products" v-bind:value="product">
+                {{ product.name }}
+            </option>
+        </select>
+        <button id="add-invoice-line" v-on:click="addInvoiceLine">Add</button>
+
+        <br />
+
+        <button id="create-invoice-button" v-on:click="createInvoice">Create new invoice</button>
+
+    </div>
+</body>
+<script src="js/invoice-vue.js"></script>
+
+</html>
