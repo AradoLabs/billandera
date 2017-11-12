@@ -9,14 +9,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <script src="https://unpkg.com/vue"></script>
-    <script src="js/form-urlencode.js"></script>
     <link rel="stylesheet" href="css/main.css">
 
 </head>
 
 <body>
     <div id="invoice-app">
+        <span>Bearer token:</span>
+        <input id="bearer-token-input" type="text" v-model="bearerToken" />
 
+        <br/>
+
+        <button v-on:click="getProducts">Get products</button>
         <button v-on:click="getInvoices">Get invoices</button>
         <span>Select invoice to copy:</span>
         <select id="invoice-select" v-model="selectedInvoiceId">
@@ -77,6 +81,7 @@
 
     </div>
 </body>
+<script src="js/procountor-api-client.js"></script>
 <script src="js/invoice-vue.js"></script>
 
 </html>

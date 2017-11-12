@@ -2,17 +2,31 @@ var invoiceApp = new Vue({
     el: "#invoice-app",
 
     data: {
+        bearerToken: "",
         selectedInvoiceId: "",
         invoice: {},
         invoices: [],
         selectedProduct: {},
         products: [],
-        invoiceLines: []
+        invoiceLines: [],
+
+        baseUrl: "https://api-test.procountor.com/api/"
     },
 
     methods: {
+        getProducts: function() {
+            new ProcountorApiClient(
+                this.baseUrl,
+                this.bearerToken
+            ).getProducts(data => {
+                this.products = data.products;
+            });
+        },
         getInvoices: function() {
-            getFromProcountorApi("invoices?status=UNFINISHED", data => {
+            new ProcountorApiClient(
+                this.baseUrl,
+                this.bearerToken
+            ).getInvoices(data => {
                 data.results.forEach(element =>
                     this.invoices.push({
                         invoiceNumber: element.invoiceNumber,
@@ -23,7 +37,10 @@ var invoiceApp = new Vue({
         },
 
         getInvoice: function(id) {
-            getFromProcountorApi("invoices/" + this.selectedInvoiceId, data => {
+            new ProcountorApiClient(
+                this.baseUrl,
+                this.bearerToken
+            ).getInvoice(this.selectedInvoiceId, data => {
                 this.invoice = data;
                 this.invoice.invoiceRows.forEach(row => {
                     var invoiceLine = new InvoiceLine(
@@ -53,7 +70,10 @@ var invoiceApp = new Vue({
             this.updateInvoiceRows();
             delete this.invoice.id;
             delete this.invoice.invoiceNumber;
-            postToProcountorApi("invoices", this.invoice, data => {
+            new ProcountorApiClient(
+                this.baseUrl,
+                this.bearerToken
+            ).createInvoice(this.invoice, data => {
                 this.invoice = data;
             });
         },
@@ -74,12 +94,6 @@ var invoiceApp = new Vue({
                 });
             });
         }
-    },
-
-    mounted: function() {
-        getFromProcountorApi("products", data => {
-            this.products = data.products;
-        });
     }
 });
 
@@ -91,46 +105,4 @@ function InvoiceLine(id, product) {
     this.total = function() {
         return this.product.price * this.quantity;
     };
-}
-
-function getFromProcountorApi(url, callback) {
-    var headers = {
-        Authorization: "Bearer insert token here"
-    };
-
-    fetch("https://api-test.procountor.com/api/" + url, {
-        method: "GET",
-        headers: headers,
-        mode: "cors",
-        cache: "default"
-    }).then(response => {
-        if (!response.ok) alert(response.statusText);
-        else {
-            response.json().then(data => {
-                callback(data);
-            });
-        }
-    });
-}
-
-function postToProcountorApi(url, data, callback) {
-    var headers = {
-        Authorization: "Bearer insert token here",
-        "Content-Type": "application/json"
-    };
-
-    fetch("https://api-test.procountor.com/api/" + url, {
-        method: "POST",
-        headers: headers,
-        mode: "cors",
-        cache: "default",
-        body: JSON.stringify(data)
-    }).then(response => {
-        if (!response.ok) alert(response.statusText);
-        else {
-            response.json().then(data => {
-                callback(data);
-            });
-        }
-    });
 }
