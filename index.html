@@ -9,35 +9,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <script src="https://unpkg.com/vue"></script>
-    <link rel="stylesheet" href="css/main.css">
 
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
+    <link rel="stylesheet" href="css/main.css">
 </head>
 
 <body>
     <div id="invoice-app">
-        <span>Bearer token:</span>
-        <input id="bearer-token-input" type="text" v-model="bearerToken" />
+        <h1>Billanderande!</h1>
+        <label class="form-label" for="bearer-token">Bearer token:</label>
+        <input class="form-input" id="bearer-token" type="text" v-model="bearerToken" />
 
         <br/>
 
-        <button v-on:click="getProducts">Get products</button>
-        <button v-on:click="getInvoices">Get invoices</button>
-        <span>Select invoice to copy:</span>
-        <select id="invoice-select" v-model="selectedInvoiceId">
+        <button class="btn" v-on:click="getProducts">Get products</button>
+        <button class="btn" v-on:click="getInvoices">Get invoices</button>
+        <label class="form-label" for="invoice-select">Select invoice to copy</label>
+        <select class="form-select" id="invoice-select" v-model="selectedInvoiceId">
             <option v-for="invoice in invoices" v-bind:value="invoice.id">
                 {{ invoice.invoiceNumber }}
             </option>
         </select>
-        <button v-on:click="getInvoice">Copy</button>
+        <button class="btn" v-on:click="getInvoice">Copy</button>
 
         <br />
 
+        <div class="form-group">
+            <span>{{ invoice.counterParty.counterPartyAddress.name }}</span>
+            <label class="form-label" id="invoice-contact-person-label" for="invoice-contact-person">Contact person</label>
+            <input class="form-input" id="invoice-contact-person" v-model="invoice.counterParty.contactPersonName"></input>
+            <label class="form-label" id="invoice-order-reference-label" for="invoice-order-reference">Order reference</label>
+            <input class="form-input" id="invoice-order-reference" v-model="invoice.orderReference"></input>
+            <label class="form-label" id="invoice-additional-information-label" for="invoice-additional-information">Additional information</label>
+            <textarea class="form-input" id="invoice-additional-information" v-model="invoice.additionalInformation"></textarea>
+        </div>
         <span>{{ invoice }}</span>
 
         <br />
 
         <span>Invoice lines:</span>
-        <table id="invoice-lines">
+        <table class="table table-striped" id="invoice-lines">
             <thead>
                 <tr>
                     <th>#</th>
@@ -47,6 +60,7 @@
                     <th>Quantity</th>
                     <th>Text</th>
                     <th>Total</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -56,28 +70,40 @@
                     <td>{{ invoiceLine.product.name }}</td>
                     <td>{{ invoiceLine.product.price }} € / {{ invoiceLine.product.unit }}</td>
                     <td>
-                        <input type="text" v-model="invoiceLine.quantity" />
+                        <input class="form-input" type="text" v-model="invoiceLine.quantity" />
                     </td>
                     <td>
-                        <input type="text" v-model="invoiceLine.text" />
+                        <input class="form-input" type="text" v-model="invoiceLine.text" />
                     </td>
                     <td>{{ invoiceLine.total() }} €</td>
                     <td>
-                        <button v-on:click="removeInvoiceLine(index)">Remove</button>
+                        <button class="btn" v-on:click="removeInvoiceLine(index)">Remove</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td colspan="2">
+                        <select class="form-select" id="product-select" v-model="selectedProduct">
+                            <option v-for="product in products" v-bind:value="product">
+                                {{ product.name }}
+                            </option>
+                        </select>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <button class="btn" id="add-invoice-line" v-on:click="addInvoiceLine">Add</button>
                     </td>
                 </tr>
             </tbody>
         </table>
-        <select id="product-select" v-model="selectedProduct">
-            <option v-for="product in products" v-bind:value="product">
-                {{ product.name }}
-            </option>
-        </select>
-        <button id="add-invoice-line" v-on:click="addInvoiceLine">Add</button>
+
 
         <br />
 
-        <button id="create-invoice-button" v-on:click="createInvoice">Create new invoice</button>
+        <button class="btn" id="create-invoice-button" v-on:click="createInvoice">Create new invoice</button>
 
     </div>
 </body>

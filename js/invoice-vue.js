@@ -4,7 +4,7 @@ var invoiceApp = new Vue({
     data: {
         bearerToken: "",
         selectedInvoiceId: "",
-        invoice: {},
+        invoice: { counterParty: { counterPartyAddress: { name: "" } } },
         invoices: [],
         selectedProduct: {},
         products: [],
@@ -15,45 +15,32 @@ var invoiceApp = new Vue({
 
     methods: {
         getProducts: function() {
-            new ProcountorApiClient(
-                this.baseUrl,
-                this.bearerToken
-            ).getProducts(data => {
-                this.products = data.products;
-            });
+            new ProcountorApiClient(this.baseUrl, this.bearerToken).getProducts(
+                data => {
+                    this.products = data.products;
+                }
+            );
         },
         getInvoices: function() {
-            new ProcountorApiClient(
-                this.baseUrl,
-                this.bearerToken
-            ).getInvoices(data => {
-                data.results.forEach(element =>
-                    this.invoices.push({
-                        invoiceNumber: element.invoiceNumber,
-                        id: element.id
-                    })
-                );
-            });
+            new ProcountorApiClient(this.baseUrl, this.bearerToken).getInvoices(
+                data => {
+                    data.results.forEach(element =>
+                        this.invoices.push({
+                            invoiceNumber: element.invoiceNumber,
+                            id: element.id
+                        })
+                    );
+                }
+            );
         },
 
         getInvoice: function(id) {
-            new ProcountorApiClient(
-                this.baseUrl,
-                this.bearerToken
-            ).getInvoice(this.selectedInvoiceId, data => {
-                this.invoice = data;
-                this.invoice.invoiceRows.forEach(row => {
-                    var invoiceLine = new InvoiceLine(
-                        this.invoiceLines.length,
-                        this.products.find(
-                            element => element.id === row.productId
-                        )
-                    );
-                    invoiceLine.quantity = row.quantity;
-                    invoiceLine.text = row.comment;
-                    this.invoiceLines.push(invoiceLine);
-                });
-            });
+            new ProcountorApiClient(this.baseUrl, this.bearerToken).getInvoice(
+                this.selectedInvoiceId,
+                data => {
+                    this.invoice = data;
+                }
+            );
         },
 
         addInvoiceLine: function() {
