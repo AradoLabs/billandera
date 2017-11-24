@@ -17,7 +17,7 @@
 </head>
 
 <body>
-    <div id="invoice-app">
+    <div id="invoice-app" class="container">
         <h1>Billanderande!</h1>
         <label class="form-label" for="bearer-token">Bearer token:</label>
         <input class="form-input" id="bearer-token" type="text" v-model="bearerToken" />
@@ -26,30 +26,38 @@
 
         <button class="btn" v-on:click="getProducts">Get products</button>
         <button class="btn" v-on:click="getInvoices">Get invoices</button>
-        <label class="form-label" for="invoice-select">Select invoice to copy</label>
-        <select class="form-select" id="invoice-select" v-model="selectedInvoiceId">
-            <option v-for="invoice in invoices" v-bind:value="invoice.id">
-                {{ invoice.invoiceNumber }}
-            </option>
-        </select>
-        <button class="btn" v-on:click="getInvoice">Copy</button>
 
-        <br />
+        <br/>
 
-        <div class="form-group">
-            <span>{{ invoice.counterParty.counterPartyAddress.name }}</span>
-            <label class="form-label" id="invoice-contact-person-label" for="invoice-contact-person">Contact person</label>
-            <input class="form-input" id="invoice-contact-person" v-model="invoice.counterParty.contactPersonName"></input>
-            <label class="form-label" id="invoice-order-reference-label" for="invoice-order-reference">Order reference</label>
-            <input class="form-input" id="invoice-order-reference" v-model="invoice.orderReference"></input>
-            <label class="form-label" id="invoice-additional-information-label" for="invoice-additional-information">Additional information</label>
-            <textarea class="form-input" id="invoice-additional-information" v-model="invoice.additionalInformation"></textarea>
+        <div class="columns">
+            <label class="form-label column col-2" for="invoice-select">Select invoice to copy</label>
+            <select class="form-select column col-4" id="invoice-select" v-model="selectedInvoiceId">
+                <option v-for="invoice in invoices" v-bind:value="invoice.id">
+                    {{ invoice.invoiceNumber }}
+                </option>
+            </select>
+            <div class="column col-1">
+                <button class="btn" v-on:click="getInvoice">Copy</button>
+            </div>
         </div>
-        <span>{{ invoice }}</span>
 
+        <h3>Invoice</h3>
+
+        <div class="columns">
+            <span class="column col-12">{{ invoice.counterParty.counterPartyAddress.name }}</span>
+
+            <label class="form-label column col-2" id="invoice-contact-person-label" for="invoice-contact-person">Contact person</label>
+            <input class="form-input column col-4" id="invoice-contact-person" v-model="invoice.counterParty.contactPersonName"></input>
+            <label class="form-label column col-2" id="invoice-order-reference-label" for="invoice-order-reference">Order reference</label>
+            <input class="form-input column col-4" id="invoice-order-reference" v-model="invoice.orderReference"></input>
+        </div>
+        <div class="columns">
+            <label class="form-label column col-2" id="invoice-additional-information-label" for="invoice-additional-information">Additional information</label>
+            <textarea class="form-input column col-4" id="invoice-additional-information" v-model="invoice.additionalInformation"></textarea>
+        </div>
         <br />
 
-        <span>Invoice lines:</span>
+        <span>Invoice lines</span>
         <table class="table table-striped" id="invoice-lines">
             <thead>
                 <tr>
