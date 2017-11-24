@@ -6,7 +6,8 @@ var invoiceApp = new Vue({
         selectedInvoiceId: "",
         invoice: { counterParty: { counterPartyAddress: { name: "" } } },
         invoices: [],
-        selectedProduct: {},
+        invoiceLineIdSeries: 1,
+        newInvoiceLine: new InvoiceLine(0, null),
         products: [],
         invoiceLines: [],
 
@@ -21,6 +22,7 @@ var invoiceApp = new Vue({
                 }
             );
         },
+
         getInvoices: function() {
             new ProcountorApiClient(this.baseUrl, this.bearerToken).getInvoices(
                 data => {
@@ -44,8 +46,10 @@ var invoiceApp = new Vue({
         },
 
         addInvoiceLine: function() {
-            this.invoiceLines.push(
-                new InvoiceLine(this.invoiceLines.length, this.selectedProduct)
+            this.invoiceLines.push(this.newInvoiceLine);
+            this.newInvoiceLine = new InvoiceLine(
+                this.invoiceLineIdSeries++,
+                null
             );
         },
 
@@ -90,6 +94,9 @@ function InvoiceLine(id, product) {
     this.quantity = 0;
     this.text = "";
     this.total = function() {
-        return this.product.price * this.quantity;
+        if (this.product !== null) {
+            return this.product.price * this.quantity;
+        }
+        return 0;
     };
 }

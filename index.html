@@ -81,18 +81,22 @@
                     </td>
                 </tr>
                 <tr>
-                    <td></td>
-                    <td></td>
+                    <td>{{ invoiceLines.length + 1 }}</td>
+                    <td>{{ newInvoiceLine.id }}</td>
                     <td colspan="2">
-                        <select class="form-select" id="product-select" v-model="selectedProduct">
+                        <select class="form-select" id="product-select" v-model="newInvoiceLine.product">
                             <option v-for="product in products" v-bind:value="product">
-                                {{ product.name }}
+                                {{ product.name }} {{ product.price }} / {{ product.unit}}
                             </option>
                         </select>
                     </td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>
+                        <input class="form-input" type="text" v-model="newInvoiceLine.quantity" />
+                    </td>
+                    <td>
+                        <input class="form-input" type="text" v-model="newInvoiceLine.text" />
+                    </td>
+                    <td>{{ newInvoiceLine.total() }} €</td>
                     <td>
                         <button class="btn" id="add-invoice-line" v-on:click="addInvoiceLine">Add</button>
                     </td>
