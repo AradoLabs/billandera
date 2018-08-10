@@ -18,13 +18,11 @@ var authenticator = new ProcountorAuthentication(
 );
 
 const app = express();
+
 app.use(cookieParser());
-app.use(express.static("public"));
-app.use((request, response, next) => {
-    if (!request.cookies.access_token) {
-        authenticator.RedirectToProcountorLogin(response);
-    }
-    next();
+
+app.get("/login", (request, response) => {
+    response.redirect(authenticator.LoginUrl());
 });
 
 app.get("/auth", (request, response) => {
@@ -34,12 +32,21 @@ app.get("/auth", (request, response) => {
         .GetToken(queryString)
         .then(token => {
             response.cookie("access_token", token); // todo: set expiration etc.
-
-            response.end(token);
+            response.redirect(request.baseUrl + "/");
         })
         .catch(error => {
             response.end(error.message);
         });
 });
+
+app.use((request, response, next) => {
+    if (!request.cookies.access_token) {
+        response.redirect(authenticator.LoginUrl());
+    } else {
+        next();
+    }
+});
+
+app.use(express.static("public"));
 
 app.listen(8080);

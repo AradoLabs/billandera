@@ -2,7 +2,7 @@ var invoiceApp = new Vue({
     el: "#invoice-app",
 
     data: {
-        bearerToken: "",
+        bearerToken: Vue.cookie.get("access_token"),
         selectedInvoiceId: "",
         invoice: { counterParty: { counterPartyAddress: { name: "" } } },
         invoices: [],

@@ -10,9 +10,15 @@ class ProcountorAuthentication {
         this.redirectUri = redirectUri;
     }
 
-    RedirectToProcountorLogin(response) {
-        response.writeHead(302, { "Location": this.baseUrl + "/login?response_type=code&client_id=" + this.clientId + "&redirect_uri=" + this.redirectUri + "&state=test" });
-        response.end();
+    LoginUrl() {
+        return (
+            this.baseUrl +
+            "/login?response_type=code&client_id=" +
+            this.clientId +
+            "&redirect_uri=" +
+            this.redirectUri +
+            "&state=test"
+        );
     }
 
     GetToken(queryString) {
@@ -21,15 +27,26 @@ class ProcountorAuthentication {
         var token = "";
         var encodedRedirectUri = encodeURIComponent(this.redirectUri);
 
-        return fetch(this.baseUrl + "/api/oauth/token?grant_type=authorization_code&redirect_uri=" + encodedRedirectUri + "&code=" + code + "&client_id=" + this.clientId + "&client_secret=" + this.clientSecret, {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" }
-        })
+        return fetch(
+            this.baseUrl +
+                "/api/oauth/token?grant_type=authorization_code&redirect_uri=" +
+                encodedRedirectUri +
+                "&code=" +
+                code +
+                "&client_id=" +
+                this.clientId +
+                "&client_secret=" +
+                this.clientSecret,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" }
+            }
+        )
             .then(tokenResponse => {
                 if (!tokenResponse.ok) {
                     throw new Error(tokenResponse.statusText);
                 }
-                return tokenResponse.json()
+                return tokenResponse.json();
             })
             .then(json => {
                 token = json.access_token;
