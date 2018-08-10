@@ -9,10 +9,12 @@ class ProcountorAuthentication {
         this.clientSecret = clientSecret;
         this.redirectUri = redirectUri;
     }
-    RedirectProcountorToLogin(response) {
+
+    RedirectToProcountorLogin(response) {
         response.writeHead(302, { "Location": this.baseUrl + "/login?response_type=code&client_id=" + this.clientId + "&redirect_uri=" + this.redirectUri + "&state=test" });
         response.end();
     }
+
     GetToken(queryString) {
         var code = queryString.code;
         var state = queryString.state;

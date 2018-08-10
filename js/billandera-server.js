@@ -1,37 +1,36 @@
 "use strict";
 
-var http = require("http");
-var url = require("url");
-var fetch = require("node-fetch");
-var ProcountorAuthentication = require("./procountor-authentication");
+const url = require("url");
+const express = require("express");
+const cookieParser = require("cookie-parser");
 
-http.createServer(function (request, response) {
+const ProcountorAuthentication = require("./procountor-authentication");
 
-    var baseUrl = "https://api-test.procountor.com";
-    var redirectUri = "http://localhost:8080/auth";
-    var clientId = "aradoTestClient";
-    var clientSecret = "testsecret_u5gqQGYGD3FMDXMZXcMe";
+const baseUrl = "https://api-test.procountor.com";
+const redirectUri = "http://localhost:8080/auth";
+const clientId = "aradoTestClient";
+const clientSecret = "testsecret_u5gqQGYGD3FMDXMZXcMe";
+var authenticator = new ProcountorAuthentication(baseUrl, clientId, clientSecret, redirectUri);
 
-    var parsedUrl = url.parse(request.url, true);
-    var path = parsedUrl.pathname;
+const app = express();
+app.use(cookieParser());
 
-    var authenticator = new ProcountorAuthentication(baseUrl, clientId, clientSecret, redirectUri);
+app.get("/", (request, response) => {
+    authenticator.RedirectToProcountorLogin(response);
+});
 
-    if (path === '/') {
-        authenticator.RedirectProcountorToLogin(response);
-    }
-    else if (path === '/auth') {
-        authenticator.GetToken(parsedUrl.query)
-            .then(token => {
-                response.end(token)
-            })
-            .catch(error => {
-                response.end(error.message)
-            });
+app.get("/auth", (request, response) => {
+    var queryString = url.parse(request.url, true).query;
 
-    }
-    else {
-        response.end();
-    }
+    authenticator.GetToken(queryString)
+        .then(token => {
+            response.cookie("access_token", token); // todo: set expiration etc.
 
-}).listen(8080);
+            response.end(token)
+        })
+        .catch(error => {
+            response.end(error.message)
+        });
+});
+
+app.listen(8080);
