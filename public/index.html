@@ -107,11 +107,13 @@
 
         <br />
 
-        <button class="btn" id="create-invoice-button" v-on:click="createInvoice">Create new invoice</button>
+        <button class="btn" id="create-invoice-button" v-on:click="createInvoice" :disabled="!invoiceIsValid()">Create</button>
 
     </div>
 </body>
 <script src="js/procountor-api-client.js"></script>
+<script src="js/types.js"></script>
+<script src="js/helpers.js"></script>
 <script src="js/invoice-vue.js"></script>
 
 </html>

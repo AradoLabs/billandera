@@ -1,4 +1,4 @@
-"use strict;";
+"use strict";
 
 function ProcountorApiClient(baseUrl, bearerToken) {
     var _baseUrl = baseUrl;
