@@ -21,15 +21,6 @@
 <body>
     <div id="invoice-app" class="container">
         <h1>Billanderande!</h1>
-        <label class="form-label" for="bearer-token">Bearer token:</label>
-        <input class="form-input" id="bearer-token" type="text" v-model="bearerToken" />
-
-        <br/>
-
-        <button class="btn" v-on:click="getProducts">Get products</button>
-        <button class="btn" v-on:click="getInvoices">Get invoices</button>
-
-        <br/>
 
         <div class="columns">
             <label class="form-label column col-2" for="invoice-select">Select invoice to copy</label>
@@ -52,12 +43,19 @@
             <input class="form-input column col-4" id="invoice-contact-person" v-model="invoice.counterParty.contactPersonName"></input>
             <label class="form-label column col-2" id="invoice-order-reference-label" for="invoice-order-reference">Order reference</label>
             <input class="form-input column col-4" id="invoice-order-reference" v-model="invoice.orderReference"></input>
-        </div>
-        <div class="columns">
             <label class="form-label column col-2" id="invoice-additional-information-label" for="invoice-additional-information">Additional information</label>
             <textarea class="form-input column col-4" id="invoice-additional-information" v-model="invoice.additionalInformation"></textarea>
         </div>
         <br />
+
+        <div class="columns">
+            <select class="form-select column col-4" id="month-select" v-model="selectedMonth">
+                <option v-for="(month, index) in months" v-bind:value="index">
+                    {{ month.name }}
+                </option>
+            </select>
+        </div>
+        <button class="btn" id="create-monthly-invoice-lines" v-on:click="createMonthlyInvoiceLines">Create monthly invoice lines</button>
 
         <span>Invoice lines</span>
         <table class="table table-striped" id="invoice-lines">
@@ -66,7 +64,6 @@
                     <th>#</th>
                     <th>Id</th>
                     <th>Product</th>
-                    <th>Price</th>
                     <th>Quantity</th>
                     <th>Text</th>
                     <th>Total</th>
@@ -77,39 +74,32 @@
                 <tr v-for="(invoiceLine, index) in invoiceLines" :key="invoiceLine.id">
                     <td>{{ index + 1 }}</td>
                     <td>{{ invoiceLine.id }}</td>
-                    <td>{{ invoiceLine.product.name }}</td>
-                    <td>{{ invoiceLine.product.price }} € / {{ invoiceLine.product.unit }}</td>
+                    <td>
+                        <select class="form-select" v-model="invoiceLine.product">
+                            <option v-for="product in products" v-bind:value="product">
+                                {{ product.name }}, {{ product.price }} / {{ product.unit}}
+                            </option>
+                        </select>
+                    </td>
                     <td>
                         <input class="form-input" type="text" v-model="invoiceLine.quantity" />
                     </td>
                     <td>
                         <input class="form-input" type="text" v-model="invoiceLine.text" />
                     </td>
-                    <td>{{ invoiceLine.total() }} €</td>
+                    <td>{{ invoiceLine.total }} €</td>
                     <td>
                         <button class="btn" v-on:click="removeInvoiceLine(index)">Remove</button>
                     </td>
                 </tr>
                 <tr>
-                    <td>{{ invoiceLines.length + 1 }}</td>
-                    <td>{{ newInvoiceLine.id }}</td>
-                    <td colspan="2">
-                        <select class="form-select" id="product-select" v-model="newInvoiceLine.product">
-                            <option v-for="product in products" v-bind:value="product">
-                                {{ product.name }} {{ product.price }} / {{ product.unit}}
-                            </option>
-                        </select>
-                    </td>
-                    <td>
-                        <input class="form-input" type="text" v-model="newInvoiceLine.quantity" />
-                    </td>
-                    <td>
-                        <input class="form-input" type="text" v-model="newInvoiceLine.text" />
-                    </td>
-                    <td>{{ newInvoiceLine.total() }} €</td>
-                    <td>
-                        <button class="btn" id="add-invoice-line" v-on:click="addInvoiceLine">Add</button>
-                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Invoice total</td>
+                    <td>{{ invoiceTotalAmount() }} €</td>
+                    <td></td>
                 </tr>
             </tbody>
         </table>

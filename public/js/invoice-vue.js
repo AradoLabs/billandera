@@ -1,15 +1,56 @@
+class InvoiceLine {
+    constructor(id, product) {
+        this.id = id;
+        this.product = product;
+        this.quantity = 0;
+        this.text = "";
+    }
+    get total() {
+        if (this.product !== null) {
+            return this.product.price * this.quantity;
+        }
+        return 0;
+    }
+}
+
+class Month {
+    constructor(month, year) {
+        this.month = month;
+        this.year = year;
+    }
+    get name() {
+        const monthNames = [
+            "Tammikuu",
+            "Helmikuu",
+            "Maaliskuu",
+            "Huhtikuu",
+            "Toukokuu",
+            "Kesäkuu",
+            "Heinäkuu",
+            "Elokuu",
+            "Syyskuu",
+            "Lokakuu",
+            "Marraskuu",
+            "Joulukuu"
+        ];
+
+        return monthNames[this.month - 1] + " " + this.year;
+    }
+}
+
 var invoiceApp = new Vue({
     el: "#invoice-app",
 
     data: {
-        bearerToken: Vue.cookie.get("access_token"),
+        bearerToken: "",
         selectedInvoiceId: "",
         invoice: { counterParty: { counterPartyAddress: { name: "" } } },
         invoices: [],
         invoiceLineIdSeries: 1,
-        newInvoiceLine: new InvoiceLine(0, null),
         products: [],
         invoiceLines: [],
+        selectedMonth: 0,
+        months: [],
 
         baseUrl: "https://api-test.procountor.com/api/"
     },
@@ -45,14 +86,6 @@ var invoiceApp = new Vue({
             );
         },
 
-        addInvoiceLine: function() {
-            this.invoiceLines.push(this.newInvoiceLine);
-            this.newInvoiceLine = new InvoiceLine(
-                this.invoiceLineIdSeries++,
-                null
-            );
-        },
-
         removeInvoiceLine: function(index) {
             this.invoiceLines.splice(index, 1);
         },
@@ -84,19 +117,89 @@ var invoiceApp = new Vue({
                     discountPercent: 0
                 });
             });
+        },
+
+        getMonths: function() {
+            var currentMonth = new Date().getMonth() + 1;
+            var currentYear = new Date().getFullYear();
+            var firstMonthFromPreviousYear = currentMonth + 1;
+
+            for (var i = firstMonthFromPreviousYear; i <= 12; i++) {
+                this.months.push(new Month(i, currentYear - 1));
+            }
+
+            for (var i = 1; i <= currentMonth; i++) {
+                this.months.push(new Month(i, currentYear));
+            }
+
+            this.selectedMonth = this.months.length - 2;
+        },
+
+        createMonthlyInvoiceLines: function() {
+            var month = this.months[this.selectedMonth].month;
+            var year = this.months[this.selectedMonth].year;
+
+            var weeks = getWeeksStartAndEndInMonth(month, year);
+
+            weeks.forEach(week => {
+                var invoiceLine = new InvoiceLine(
+                    this.invoiceLineIdSeries++,
+                    null
+                );
+                invoiceLine.text =
+                    week.start + ". - " + week.end + "." + month + "." + year;
+                invoiceLine.product = { name: "select", price: 0 };
+
+                this.invoiceLines.push(invoiceLine);
+            });
+        },
+
+        invoiceTotalAmount: function() {
+            var total = 0;
+            this.invoiceLines.forEach(invoiceLine => {
+                total = total + invoiceLine.total;
+            });
+
+            return total;
         }
+    },
+
+    beforeMount() {
+        this.bearerToken = Vue.cookie.get("access_token");
+        this.getInvoices();
+        this.getProducts();
+        this.getMonths();
     }
 });
 
-function InvoiceLine(id, product) {
-    this.id = id;
-    this.product = product;
-    this.quantity = 0;
-    this.text = "";
-    this.total = function() {
-        if (this.product !== null) {
-            return this.product.price * this.quantity;
+function endFirstWeek(firstDate, firstDay) {
+    if (!firstDay) {
+        return 7 - firstDate.getDay();
+    }
+    if (firstDate.getDay() < firstDay) {
+        return firstDay - firstDate.getDay();
+    } else {
+        return 7 - firstDate.getDay() + firstDay;
+    }
+}
+
+function getWeeksStartAndEndInMonth(month, year) {
+    month = month - 1;
+    let weeks = [],
+        firstDate = new Date(year, month, 1),
+        lastDate = new Date(year, month + 1, 0),
+        numDays = lastDate.getDate();
+
+    let start = 1;
+    let end = endFirstWeek(firstDate, 1);
+    while (start <= numDays) {
+        weeks.push({ start: start, end: end });
+        start = end + 1;
+        end = end + 7;
+        end = start === 1 && end === 8 ? 1 : end;
+        if (end > numDays) {
+            end = numDays;
         }
-        return 0;
-    };
+    }
+    return weeks;
 }
