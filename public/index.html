@@ -23,92 +23,140 @@
         <h1>Billanderande!</h1>
 
         <div class="columns">
-            <label class="form-label column col-2" for="invoice-select">Select invoice to copy</label>
-            <select class="form-select column col-4" id="invoice-select" v-model="selectedInvoiceId">
-                <option v-for="invoice in invoices" v-bind:value="invoice.id">
-                    {{ invoice.invoiceNumber }}
-                </option>
-            </select>
-            <div class="column col-1">
-                <button class="btn" v-on:click="getInvoice">Copy</button>
+            <div class="column col-6">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-4">
+                            <label class="form-label" for="invoice-select">Select invoice to copy</label>
+                        </div>
+                        <div class="col-7">
+                            <select class="form-select" id="invoice-select" v-model="selectedInvoiceId">
+                                <option v-for="invoice in invoices" v-bind:value="invoice.id">
+                                    {{ invoice.invoiceNumber }}
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <button type="button" class="btn" v-on:click="getInvoice">Copy</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
 
-        <h3>Invoice</h3>
+        <div class="columns">
+            <div class="column col-5">
+                <form class="form-horizontal">
+                    <div class="col-12">
+                        <h3>Invoice</h3>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-4">
+                            <label class="form-label" id="invoice-client-label">Client</label>
+                        </div>
+                        <div class="col-8">
+                            <span disabledid="invoice-contact-client">{{ invoice.counterParty.counterPartyAddress.name }}</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-4">
+                            <label class="form-label" id="invoice-contact-person-label" for="invoice-contact-person">Contact person</label>
+                        </div>
+                        <div class="col-8">
+                            <input class="form-input" id="invoice-contact-person" v-model="invoice.counterParty.contactPersonName"></input>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-4">
+                            <label class="form-label" id="invoice-order-reference-label" for="invoice-order-reference">Order reference</label>
+                        </div>
+                        <div class="col-8">
+                            <input class="form-input" id="invoice-order-reference" v-model="invoice.orderReference"></input>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-4">
+                            <label class="form-label" id="invoice-additional-information-label" for="invoice-additional-information">Additional information</label>
+                        </div>
+                        <div class="col-8">
+                            <textarea class="form-input" id="invoice-additional-information" v-model="invoice.additionalInformation"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="divider-vert"></div>
+
+            <div class="column col-5">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-4">
+                            <select class="form-select" id="month-select" v-model="selectedMonth">
+                                <option v-for="(month, index) in months" v-bind:value="index">
+                                    {{ month.name }}
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <button type="button" class="btn" id="create-monthly-invoice-lines" v-on:click="createMonthlyInvoiceLines">Create monthly invoice lines</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <div class="columns">
-            <span class="column col-12">{{ invoice.counterParty.counterPartyAddress.name }}</span>
-
-            <label class="form-label column col-2" id="invoice-contact-person-label" for="invoice-contact-person">Contact person</label>
-            <input class="form-input column col-4" id="invoice-contact-person" v-model="invoice.counterParty.contactPersonName"></input>
-            <label class="form-label column col-2" id="invoice-order-reference-label" for="invoice-order-reference">Order reference</label>
-            <input class="form-input column col-4" id="invoice-order-reference" v-model="invoice.orderReference"></input>
-            <label class="form-label column col-2" id="invoice-additional-information-label" for="invoice-additional-information">Additional information</label>
-            <textarea class="form-input column col-4" id="invoice-additional-information" v-model="invoice.additionalInformation"></textarea>
+            <div class="col-12">
+                <table class="table table-striped" id="invoice-lines">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Id</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Text</th>
+                            <th>Total</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(invoiceLine, index) in invoiceLines" :key="invoiceLine.id">
+                            <td>{{ index + 1 }}</td>
+                            <td>{{ invoiceLine.id }}</td>
+                            <td>
+                                <select class="form-select" v-model="invoiceLine.product">
+                                    <option v-for="product in products" v-bind:value="product">
+                                        {{ product.name }}, {{ product.price }} / {{ product.unit}}
+                                    </option>
+                                </select>
+                            </td>
+                            <td>
+                                <input class="form-input" type="text" v-model="invoiceLine.quantity" />
+                            </td>
+                            <td>
+                                <input class="form-input" type="text" v-model="invoiceLine.text" />
+                            </td>
+                            <td>{{ invoiceLine.total }} €</td>
+                            <td>
+                                <button type="button" class="btn" v-on:click="removeInvoiceLine(index)">Remove</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>Invoice total</td>
+                            <td>{{ invoiceTotalAmount() }} €</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <br />
 
-        <div class="columns">
-            <select class="form-select column col-4" id="month-select" v-model="selectedMonth">
-                <option v-for="(month, index) in months" v-bind:value="index">
-                    {{ month.name }}
-                </option>
-            </select>
-        </div>
-        <button class="btn" id="create-monthly-invoice-lines" v-on:click="createMonthlyInvoiceLines">Create monthly invoice lines</button>
-
-        <span>Invoice lines</span>
-        <table class="table table-striped" id="invoice-lines">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Id</th>
-                    <th>Product</th>
-                    <th>Quantity</th>
-                    <th>Text</th>
-                    <th>Total</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(invoiceLine, index) in invoiceLines" :key="invoiceLine.id">
-                    <td>{{ index + 1 }}</td>
-                    <td>{{ invoiceLine.id }}</td>
-                    <td>
-                        <select class="form-select" v-model="invoiceLine.product">
-                            <option v-for="product in products" v-bind:value="product">
-                                {{ product.name }}, {{ product.price }} / {{ product.unit}}
-                            </option>
-                        </select>
-                    </td>
-                    <td>
-                        <input class="form-input" type="text" v-model="invoiceLine.quantity" />
-                    </td>
-                    <td>
-                        <input class="form-input" type="text" v-model="invoiceLine.text" />
-                    </td>
-                    <td>{{ invoiceLine.total }} €</td>
-                    <td>
-                        <button class="btn" v-on:click="removeInvoiceLine(index)">Remove</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>Invoice total</td>
-                    <td>{{ invoiceTotalAmount() }} €</td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
-
-
-        <br />
-
-        <button class="btn" id="create-invoice-button" v-on:click="createInvoice" :disabled="!invoiceIsValid()">Create</button>
-
+        <button type="button" class="btn" id="create-invoice-button" v-on:click="createInvoice" :disabled="!invoiceIsValid()">Create</button>
+    </div>
     </div>
 </body>
 <script src="js/procountor-api-client.js"></script>
