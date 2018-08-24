@@ -19,49 +19,35 @@ var invoiceApp = new Vue({
 
     methods: {
         getProducts: function() {
-            new ProcountorApiClient(this.baseUrl, this.bearerToken).getProducts(
-                data => {
-                    this.products = data.products;
-                }
-            );
+            new ProcountorApiClient(this.baseUrl, this.bearerToken).getProducts(data => {
+                this.products = data.products;
+            });
         },
 
         getInvoices: function() {
-            new ProcountorApiClient(this.baseUrl, this.bearerToken).getInvoices(
-                data => {
-                    data.results.forEach(element =>
-                        this.invoices.push({
-                            invoiceNumber: element.invoiceNumber,
-                            id: element.id
-                        })
-                    );
-                }
-            );
+            new ProcountorApiClient(this.baseUrl, this.bearerToken).getInvoices(data => {
+                data.results.forEach(element =>
+                    this.invoices.push({
+                        invoiceNumber: element.invoiceNumber,
+                        id: element.id
+                    })
+                );
+            });
         },
 
         getInvoice: function(id) {
-            new ProcountorApiClient(this.baseUrl, this.bearerToken).getInvoice(
-                this.selectedInvoiceId,
-                data => {
-                    this.invoice = data;
-                }
-            );
+            new ProcountorApiClient(this.baseUrl, this.bearerToken).getInvoice(this.selectedInvoiceId, data => {
+                this.invoice = data;
+            });
         },
 
         createInvoice: function() {
             this.updateInvoiceRows();
             delete this.invoice.id;
             delete this.invoice.invoiceNumber;
-            new ProcountorApiClient(
-                this.baseUrl,
-                this.bearerToken
-            ).createInvoice(this.invoice, data => {
+            new ProcountorApiClient(this.baseUrl, this.bearerToken).createInvoice(this.invoice, data => {
                 this.invoice = data;
             });
-        },
-
-        removeInvoiceLine: function(index) {
-            this.invoiceLines.splice(index, 1);
         },
 
         updateInvoiceRows: function() {
@@ -97,6 +83,10 @@ var invoiceApp = new Vue({
             this.selectedMonth = this.months.length - 2;
         },
 
+        createInvoiceLine: function() {
+            this.invoiceLines.push(new InvoiceLine(this.invoiceLineIdSeries++, null));
+        },
+
         createMonthlyInvoiceLines: function() {
             var month = this.months[this.selectedMonth].month;
             var year = this.months[this.selectedMonth].year;
@@ -104,15 +94,23 @@ var invoiceApp = new Vue({
             var weeks = Weeks.getStartAndEndDaysForMonth(month, year);
 
             weeks.forEach(week => {
-                var invoiceLine = new InvoiceLine(
-                    this.invoiceLineIdSeries++,
-                    null
-                );
-                invoiceLine.text =
-                    week.start + ". - " + week.end + "." + month + "." + year;
+                var invoiceLine = new InvoiceLine(this.invoiceLineIdSeries++, null);
+                invoiceLine.text = week.start + ". - " + week.end + "." + month + "." + year;
 
                 this.invoiceLines.push(invoiceLine);
             });
+        },
+
+        removeInvoiceLine: function(index) {
+            this.invoiceLines.splice(index, 1);
+        },
+
+        moveInvoiceLineUp: function(index) {
+            Arrays.moveBackward(this.invoiceLines, index);
+        },
+
+        moveInvoiceLineDown: function(index) {
+            Arrays.moveForward(this.invoiceLines, index);
         },
 
         invoiceTotalAmount: function() {

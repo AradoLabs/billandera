@@ -28,3 +28,17 @@ class Weeks {
         return weeks;
     }
 }
+
+class Arrays {
+    static moveBackward(array, index) {
+        if (index === 0 || array.length === 1) return;
+
+        array.splice(index - 1, 2, array[index], array[index - 1]);
+    }
+
+    static moveForward(array, index) {
+        if (index === array.length - 1 || array.length === 1) return;
+
+        array.splice(index, 2, array[index + 1], array[index]);
+    }
+}

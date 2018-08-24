@@ -116,6 +116,7 @@
                             <th>Text</th>
                             <th>Total</th>
                             <th></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -137,17 +138,33 @@
                             </td>
                             <td>{{ invoiceLine.total }} €</td>
                             <td>
-                                <button type="button" class="btn" v-on:click="removeInvoiceLine(index)">Remove</button>
+                                <button type="button" class="btn" v-on:click="moveInvoiceLineUp(index)">
+                                    <i class="icon icon-upward"></i>
+                                </button>
+                                <button type="button" class="btn" v-on:click="moveInvoiceLineDown(index)">
+                                    <i class="icon icon-downward"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <button type="button" class="btn" v-on:click="removeInvoiceLine(index)">
+                                    <i class="icon icon-delete"></i>
+                                </button>
                             </td>
                         </tr>
                         <tr>
                             <td></td>
                             <td></td>
-                            <td></td>
+                            <td>
+                            </td>
                             <td></td>
                             <td>Invoice total</td>
                             <td>{{ invoiceTotalAmount() }} €</td>
                             <td></td>
+                            <td>
+                                <button id="create-invoice-line" type="button" class="btn" v-on:click="createInvoiceLine()">
+                                    <i class="icon icon-plus"></i>
+                                </button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
