@@ -5,49 +5,75 @@ var invoiceApp = new Vue({
 
     data: {
         bearerToken: "",
+        baseUrl: "https://api-test.procountor.com/api/",
+
         selectedInvoiceId: "",
+        selectedMonth: 0,
+
         invoice: { counterParty: { counterPartyAddress: { name: "" } } },
         invoices: [],
         invoiceLineIdSeries: 1,
         products: [],
         invoiceLines: [],
-        selectedMonth: 0,
+
         months: [],
 
-        baseUrl: "https://api-test.procountor.com/api/"
+        hideError: true,
+        errorMessages: []
     },
 
     methods: {
         getProducts: function() {
-            new ProcountorApiClient(this.baseUrl, this.bearerToken).getProducts(data => {
-                this.products = data.products;
-            });
+            new ProcountorApiClient(this.baseUrl, this.bearerToken)
+                .getProducts()
+                .then(data => {
+                    this.products = data.products;
+                })
+                .catch(error => {
+                    this.addErrorMessage(error.message);
+                });
         },
 
         getInvoices: function() {
-            new ProcountorApiClient(this.baseUrl, this.bearerToken).getInvoices(data => {
-                data.results.forEach(element =>
-                    this.invoices.push({
-                        invoiceNumber: element.invoiceNumber,
-                        id: element.id
-                    })
-                );
-            });
+            new ProcountorApiClient(this.baseUrl, this.bearerToken)
+                .getInvoices()
+                .then(data => {
+                    data.results.forEach(element =>
+                        this.invoices.push({
+                            invoiceNumber: element.invoiceNumber,
+                            id: element.id
+                        })
+                    );
+                })
+                .catch(error => {
+                    this.addErrorMessage(error.message);
+                });
         },
 
         getInvoice: function(id) {
-            new ProcountorApiClient(this.baseUrl, this.bearerToken).getInvoice(this.selectedInvoiceId, data => {
-                this.invoice = data;
-            });
+            new ProcountorApiClient(this.baseUrl, this.bearerToken)
+                .getInvoice(this.selectedInvoiceId)
+                .then(data => {
+                    this.invoice = data;
+                })
+                .catch(error => {
+                    this.addErrorMessage(error.message);
+                });
         },
 
         createInvoice: function() {
             this.updateInvoiceRows();
             delete this.invoice.id;
             delete this.invoice.invoiceNumber;
-            new ProcountorApiClient(this.baseUrl, this.bearerToken).createInvoice(this.invoice, data => {
-                this.invoice = data;
-            });
+
+            new ProcountorApiClient(this.baseUrl, this.bearerToken)
+                .createInvoice(this.invoice)
+                .then(data => {
+                    this.invoice = data;
+                })
+                .catch(error => {
+                    this.addErrorMessage(error.message);
+                });
         },
 
         updateInvoiceRows: function() {
@@ -130,6 +156,16 @@ var invoiceApp = new Vue({
                 if (!invoiceLine.isValid) isValid = false;
             });
             return isValid;
+        },
+
+        addErrorMessage: function(message) {
+            this.errorMessages.push(message);
+            this.hideError = false;
+        },
+
+        dismissErrors: function() {
+            this.hideError = true;
+            this.errorMessages = [];
         }
     },
 

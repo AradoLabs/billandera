@@ -6,48 +6,46 @@ class ProcountorApiClient {
         this.bearerToken = bearerToken;
     }
 
-    getInvoices(callback) {
-        this.get("invoices?status=UNFINISHED", callback);
+    getInvoices() {
+        return this.get("invoices?status=UNFINISHED");
     }
 
-    getInvoice(id, callback) {
-        this.get("invoices/" + id, callback);
+    getInvoice(id) {
+        return this.get("invoices/" + id);
     }
 
-    getProducts(callback) {
-        this.get("products", callback);
+    getProducts() {
+        return this.get("products");
     }
 
-    createInvoice(invoice, callback) {
-        this.post("invoices", invoice, callback);
+    createInvoice(invoice) {
+        return this.post("invoices", invoice);
     }
 
-    get(url, callback) {
+    get(url) {
         var headers = {
             Authorization: "Bearer " + this.bearerToken
         };
-        fetch(this.baseUrl + url, {
+        return fetch(this.baseUrl + url, {
             method: "GET",
             headers: headers,
             mode: "cors",
             cache: "default"
         }).then(response => {
-            if (!response.ok) {
-                throw new Error(response.statusText);
+            if (response.ok) {
+                return response.json();
             } else {
-                response.json().then(data => {
-                    callback(data);
-                });
+                throw new Error("GET to procountor api failed with status " + response.status);
             }
         });
     }
 
-    post(url, data, callback) {
+    post(url, data) {
         var headers = {
             Authorization: "Bearer " + this.bearerToken,
             "Content-Type": "application/json"
         };
-        fetch(this.baseUrl + url, {
+        return fetch(this.baseUrl + url, {
             method: "POST",
             headers: headers,
             mode: "cors",
@@ -57,9 +55,7 @@ class ProcountorApiClient {
             if (!response.ok) {
                 throw new Error(response.statusText);
             } else {
-                response.json().then(data => {
-                    callback(data);
-                });
+                return response.json();
             }
         });
     }
