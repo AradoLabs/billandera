@@ -19,27 +19,13 @@
 </head>
 
 <body>
-    <div id="invoice-app" class="container">
+    <div id="invoice-app" class="container billandera-container">
         <h1>Billanderande!</h1>
 
         <div class="columns">
-            <div class="column col-6">
+            <div class="column col-5">
                 <form class="form-horizontal">
-                    <div class="form-group">
-                        <div class="col-4">
-                            <label class="form-label" for="invoice-select">Select invoice to copy</label>
-                        </div>
-                        <div class="col-7">
-                            <select class="form-select" id="invoice-select" v-model="selectedInvoiceId">
-                                <option v-for="invoice in invoices" v-bind:value="invoice.id">
-                                    {{ invoice.invoiceNumber }}
-                                </option>
-                            </select>
-                        </div>
-                        <div>
-                            <button type="button" class="btn" v-on:click="getInvoice">Copy</button>
-                        </div>
-                    </div>
+
                 </form>
             </div>
         </div>
@@ -85,10 +71,23 @@
                 </form>
             </div>
 
-            <div class="divider-vert"></div>
+            <div class="divider-vert col-1"></div>
 
-            <div class="column col-5">
+            <div class="column col-6">
                 <form class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-4">
+                            <select class="form-select" id="invoice-select" v-model="selectedInvoiceId">
+                                <option selected="selected" value="">&lt;select invoice to copy&gt;</option>
+                                <option v-for="invoice in invoices" v-bind:value="invoice.id">
+                                    {{ invoice.invoiceNumber }}
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <button type="button" class="btn" v-on:click="getInvoice" :disabled="selectedInvoiceId === ''">Copy</button>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <div class="col-4">
                             <select class="form-select" id="month-select" v-model="selectedMonth">
