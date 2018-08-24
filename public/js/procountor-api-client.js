@@ -1,64 +1,66 @@
 "use strict";
 
-function ProcountorApiClient(baseUrl, bearerToken) {
-    var _baseUrl = baseUrl;
-    var _bearerToken = bearerToken;
+class ProcountorApiClient {
+    constructor(baseUrl, bearerToken) {
+        this.baseUrl = baseUrl;
+        this.bearerToken = bearerToken;
+    }
 
-    this.getInvoices = function(callback) {
-        get("invoices?status=UNFINISHED", callback);
-    };
+    getInvoices(callback) {
+        this.get("invoices?status=UNFINISHED", callback);
+    }
 
-    this.getInvoice = function(id, callback) {
-        get("invoices/" + id, callback);
-    };
+    getInvoice(id, callback) {
+        this.get("invoices/" + id, callback);
+    }
 
-    this.getProducts = function(callback) {
-        get("products", callback);
-    };
+    getProducts(callback) {
+        this.get("products", callback);
+    }
 
-    this.createInvoice = function(invoice, callback) {
-        post("invoices", invoice, callback);
-    };
+    createInvoice(invoice, callback) {
+        this.post("invoices", invoice, callback);
+    }
 
-    var get = function getFromProcountorApi(url, callback) {
+    get(url, callback) {
         var headers = {
-            Authorization: "Bearer " + _bearerToken
+            Authorization: "Bearer " + this.bearerToken
         };
-
-        fetch(_baseUrl + url, {
+        fetch(this.baseUrl + url, {
             method: "GET",
             headers: headers,
             mode: "cors",
             cache: "default"
         }).then(response => {
-            if (!response.ok) alert(response.statusText);
-            else {
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            } else {
                 response.json().then(data => {
                     callback(data);
                 });
             }
         });
-    };
+    }
 
-    var post = function postToProcountorApi(url, data, callback) {
+    post(url, data, callback) {
         var headers = {
-            Authorization: "Bearer " + _bearerToken,
+            Authorization: "Bearer " + this.bearerToken,
             "Content-Type": "application/json"
         };
-
-        fetch(_baseUrl + url, {
+        fetch(this.baseUrl + url, {
             method: "POST",
             headers: headers,
             mode: "cors",
             cache: "default",
             body: JSON.stringify(data)
         }).then(response => {
-            if (!response.ok) alert(response.statusText);
-            else {
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            } else {
                 response.json().then(data => {
                     callback(data);
                 });
             }
         });
-    };
+    }
 }
