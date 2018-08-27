@@ -33,7 +33,7 @@ class ProcountorApiClient {
         });
     }
 
-    post(url) {
+    post(url, data) {
         return this._post(this.baseUrl + url, this._getBearerToken(), data).catch(error => {
             if (error.message === "Unauthorized") {
                 return this.refreshTokenCallback().then(() => {
