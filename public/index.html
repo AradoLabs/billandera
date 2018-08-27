@@ -9,8 +9,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <script src="https://unpkg.com/vue"></script>
-    <script src="js/lib/js.cookie.js"></script>
-    <script src="js/lib/vue-js-cookies.min.js"></script>
 
     <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
     <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
@@ -116,35 +114,18 @@
                 <table class="table table-striped" id="invoice-lines">
                     <thead>
                         <tr>
-                            <th>#</th>
-                            <th>Id</th>
-                            <th>Product</th>
-                            <th>Quantity</th>
-                            <th>Text</th>
-                            <th>Total</th>
-                            <th></th>
-                            <th></th>
+                            <th class="col-1">#</th>
+                            <th class="col-3">Product</th>
+                            <th class="col-2">Quantity</th>
+                            <th class="col-4">Text</th>
+                            <th class="col-1">Total</th>
+                            <th class="col-1"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(invoiceLine, index) in invoiceLines" :key="invoiceLine.id">
-                            <td>{{ index + 1 }}</td>
-                            <td>{{ invoiceLine.id }}</td>
                             <td>
-                                <select class="form-select" v-model="invoiceLine.product">
-                                    <option v-for="product in products" v-bind:value="product">
-                                        {{ product.name }}, {{ product.price }} / {{ product.unit}}
-                                    </option>
-                                </select>
-                            </td>
-                            <td>
-                                <input class="form-input" type="text" v-model="invoiceLine.quantity" />
-                            </td>
-                            <td>
-                                <input class="form-input" type="text" v-model="invoiceLine.text" />
-                            </td>
-                            <td>{{ invoiceLine.total }} €</td>
-                            <td>
+                                <span class="chip">{{ index + 1 }}</span>
                                 <button type="button" class="btn" v-on:click="moveInvoiceLineUp(index)">
                                     <i class="icon icon-upward"></i>
                                 </button>
@@ -152,6 +133,20 @@
                                     <i class="icon icon-downward"></i>
                                 </button>
                             </td>
+                            <td>
+                                <select class="form-select" v-model="invoiceLine.product">
+                                    <option v-for="product in products" v-bind:value="product">
+                                        {{ product.name }}, {{ product.price }} € / {{ product.unit}}
+                                    </option>
+                                </select>
+                            </td>
+                            <td>
+                                <input class="form-input" type="number" step="any" min="0" v-model="invoiceLine.quantity" />
+                            </td>
+                            <td>
+                                <input class="form-input" type="text" v-model="invoiceLine.text" />
+                            </td>
+                            <td>{{ invoiceLine.total }} €</td>
                             <td>
                                 <button type="button" class="btn" v-on:click="removeInvoiceLine(index)">
                                     <i class="icon icon-delete"></i>
@@ -161,12 +156,9 @@
                         <tr>
                             <td></td>
                             <td></td>
-                            <td>
-                            </td>
                             <td></td>
                             <td>Invoice total</td>
                             <td>{{ invoiceTotalAmount() }} €</td>
-                            <td></td>
                             <td>
                                 <button id="create-invoice-line" type="button" class="btn" v-on:click="createInvoiceLine()">
                                     <i class="icon icon-plus"></i>
@@ -182,6 +174,7 @@
     </div>
     </div>
 </body>
+<script src="js/lib/js.cookie.js"></script>
 <script src="js/procountor-api-client.js"></script>
 <script src="js/types.js"></script>
 <script src="js/helpers.js"></script>

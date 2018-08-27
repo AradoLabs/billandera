@@ -27,20 +27,19 @@ class Month {
     }
     get name() {
         const monthNames = [
-            "Tammikuu",
-            "Helmikuu",
-            "Maaliskuu",
-            "Huhtikuu",
-            "Toukokuu",
-            "Kesäkuu",
-            "Heinäkuu",
-            "Elokuu",
-            "Syyskuu",
-            "Lokakuu",
-            "Marraskuu",
-            "Joulukuu"
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
         ];
-
         return monthNames[this.month - 1] + " " + this.year;
     }
 }
