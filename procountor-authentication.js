@@ -10,7 +10,7 @@ class ProcountorAuthentication {
         this.redirectUri = redirectUri;
     }
 
-    LoginUrl() {
+    loginUrl() {
         return (
             this.baseUrl +
             "/login?response_type=code&client_id=" +
@@ -21,10 +21,7 @@ class ProcountorAuthentication {
         );
     }
 
-    GetToken(queryString) {
-        var code = queryString.code;
-        var state = queryString.state;
-        var token = "";
+    getToken(code) {
         var encodedRedirectUri = encodeURIComponent(this.redirectUri);
 
         return fetch(
@@ -44,13 +41,44 @@ class ProcountorAuthentication {
         )
             .then(tokenResponse => {
                 if (!tokenResponse.ok) {
-                    throw new Error(tokenResponse.statusText);
+                    throw new Error(tokenResponse);
                 }
                 return tokenResponse.json();
             })
             .then(json => {
-                token = json.access_token;
-                return token;
+                return {
+                    token: json.access_token,
+                    lifetimeInSeconds: json.expires_in,
+                    refreshToken: json.refresh_token
+                };
+            });
+    }
+
+    getTokenWithRefreshToken(refreshToken) {
+        return fetch(
+            this.baseUrl +
+                "/api/oauth/token?grant_type=refresh_token&refresh_token=" +
+                refreshToken +
+                "&client_id=" +
+                this.clientId +
+                "&client_secret=" +
+                this.clientSecret,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" }
+            }
+        )
+            .then(tokenResponse => {
+                if (!tokenResponse.ok) {
+                    throw new Error(tokenResponse);
+                }
+                return tokenResponse.json();
+            })
+            .then(json => {
+                return {
+                    token: json.access_token,
+                    lifetimeInSeconds: json.expires_in
+                };
             });
     }
 }

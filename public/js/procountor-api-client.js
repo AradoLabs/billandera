@@ -1,9 +1,9 @@
 "use strict";
 
 class ProcountorApiClient {
-    constructor(baseUrl, bearerToken) {
+    constructor(baseUrl, refreshTokenCallback) {
         this.baseUrl = baseUrl;
-        this.bearerToken = bearerToken;
+        this.refreshTokenCallback = refreshTokenCallback;
     }
 
     getInvoices() {
@@ -23,10 +23,32 @@ class ProcountorApiClient {
     }
 
     get(url) {
+        return this._get(this.baseUrl + url, this._getBearerToken()).catch(error => {
+            if (error.message === "Unauthorized") {
+                return this.refreshTokenCallback().then(() => {
+                    return this._get(this.baseUrl + url, this._getBearerToken());
+                });
+            }
+            throw error;
+        });
+    }
+
+    post(url) {
+        return this._post(this.baseUrl + url, this._getBearerToken(), data).catch(error => {
+            if (error.message === "Unauthorized") {
+                return this.refreshTokenCallback().then(() => {
+                    return this._post(this.baseUrl + url, this._getBearerToken(), data);
+                });
+            }
+            throw error;
+        });
+    }
+
+    _get(url, bearerToken) {
         var headers = {
-            Authorization: "Bearer " + this.bearerToken
+            Authorization: "Bearer " + bearerToken
         };
-        return fetch(this.baseUrl + url, {
+        return fetch(url, {
             method: "GET",
             headers: headers,
             mode: "cors",
@@ -35,28 +57,38 @@ class ProcountorApiClient {
             if (response.ok) {
                 return response.json();
             } else {
+                if (response.status === 401) {
+                    throw new Error("Unauthorized");
+                }
                 throw new Error("GET to procountor api failed with status " + response.status);
             }
         });
     }
 
-    post(url, data) {
+    _post(url, bearerToken, data) {
         var headers = {
-            Authorization: "Bearer " + this.bearerToken,
+            Authorization: "Bearer " + bearerToken,
             "Content-Type": "application/json"
         };
-        return fetch(this.baseUrl + url, {
+        return fetch(url, {
             method: "POST",
             headers: headers,
             mode: "cors",
             cache: "default",
             body: JSON.stringify(data)
         }).then(response => {
-            if (!response.ok) {
-                throw new Error(response.statusText);
-            } else {
+            if (response.ok) {
                 return response.json();
+            } else {
+                if (response.status === 401) {
+                    throw new Error("Unauthorized");
+                }
+                throw new Error("POST to procountor api failed with status " + response.status);
             }
         });
+    }
+
+    _getBearerToken() {
+        return Cookies.get("access_token");
     }
 }

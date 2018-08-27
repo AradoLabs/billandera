@@ -4,7 +4,6 @@ var invoiceApp = new Vue({
     el: "#invoice-app",
 
     data: {
-        bearerToken: "",
         baseUrl: "https://api-test.procountor.com/api/",
 
         selectedInvoiceId: "",
@@ -24,7 +23,7 @@ var invoiceApp = new Vue({
 
     methods: {
         getProducts: function() {
-            new ProcountorApiClient(this.baseUrl, this.bearerToken)
+            new ProcountorApiClient(this.baseUrl, this.refreshAuthentication)
                 .getProducts()
                 .then(data => {
                     this.products = data.products;
@@ -35,7 +34,7 @@ var invoiceApp = new Vue({
         },
 
         getInvoices: function() {
-            new ProcountorApiClient(this.baseUrl, this.bearerToken)
+            new ProcountorApiClient(this.baseUrl, this.refreshAuthentication)
                 .getInvoices()
                 .then(data => {
                     data.results.forEach(element =>
@@ -51,7 +50,7 @@ var invoiceApp = new Vue({
         },
 
         getInvoice: function(id) {
-            new ProcountorApiClient(this.baseUrl, this.bearerToken)
+            new ProcountorApiClient(this.baseUrl, this.refreshAuthentication)
                 .getInvoice(this.selectedInvoiceId)
                 .then(data => {
                     this.invoice = data;
@@ -66,7 +65,7 @@ var invoiceApp = new Vue({
             delete this.invoice.id;
             delete this.invoice.invoiceNumber;
 
-            new ProcountorApiClient(this.baseUrl, this.bearerToken)
+            new ProcountorApiClient(this.baseUrl, this.refreshAuthentication)
                 .createInvoice(this.invoice)
                 .then(data => {
                     this.invoice = data;
@@ -166,11 +165,14 @@ var invoiceApp = new Vue({
         dismissErrors: function() {
             this.hideError = true;
             this.errorMessages = [];
+        },
+
+        refreshAuthentication: function() {
+            return fetch("/refreshAuth", { method: "GET" });
         }
     },
 
     beforeMount() {
-        this.bearerToken = Vue.cookie.get("access_token");
         this.getInvoices();
         this.getProducts();
         this.initializeMonths();
