@@ -4,6 +4,7 @@ const url = require("url");
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const MemoryStore = require("memorystore")(session);
 
 const ProcountorAuthentication = require("./procountor-authentication");
 
@@ -18,8 +19,11 @@ const app = express();
 app.use(cookieParser());
 app.use(
     session({
+        store: new MemoryStore({ checkPeriod: 24 * 60 * 60 * 1000 }),
         secret: "very secret stuff",
-        cookie: { secure: false } // set true for prod
+        cookie: { secure: false }, // set true for prod
+        resave: false,
+        saveUninitialized: true
     })
 );
 
