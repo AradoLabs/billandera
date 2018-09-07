@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title></title>
+    <title>Arado Billanderande!</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -20,10 +20,10 @@
     <div id="invoice-app" class="container billandera-container">
 
         <div class="columns">
-
             <h1 class="col-11">Billanderande!</h1>
             <a class="text-right col-1" href="logout">Logout</a>
         </div>
+
         <div class="toast toast-error" v-bind:class="{ 'd-hide': hideError }">
             <button id="dismiss-errors" class="btn btn-clear float-right" v-on:click="dismissErrors()"></button>
             <ul>
@@ -36,6 +36,48 @@
         </div>
 
         <div class="columns">
+            <div class="column col-6 col-lg-12">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-4 col-sm-12">
+                            <select class="form-select" id="invoice-select" v-model="selectedInvoiceId">
+                                <option selected="selected" value="">&lt;select&gt;</option>
+                                <option v-for="invoice in invoices" v-bind:value="invoice.id">
+                                    {{ invoice.invoiceNumber }}
+                                </option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn col-8 col-sm-12" v-on:click="copyInvoice" :disabled="selectedInvoiceId === ''">
+                            Copy invoice
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-4 col-sm-12">
+                            <select class="form-select" id="month-select" v-model="selectedMonth">
+                                <option v-for="(month, index) in months" v-bind:value="index">
+                                    {{ month.name }}
+                                </option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn col-8 col-sm-12" id="create-monthly-invoice-lines" v-on:click="createMonthlyInvoiceLines">Create
+                            monthly invoice lines
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn col-8 col-sm-12 col-ml-auto" v-on:click="newInvoice">
+                            Reset
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn col-8 col-sm-12 col-ml-auto" v-on:click="createInvoice" :disabled="!invoiceIsValid()">
+                            Create invoice
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="divider-vert col-1 hide-lg"></div>
+
             <div class="column col-5 col-lg-12">
                 <form class="form-horizontal">
                     <div class="form-group">
@@ -75,45 +117,6 @@
                         <div class="col-8 col-sm-12">
                             <textarea class="form-input" id="invoice-additional-information" rows="5" v-model="invoice.additionalInformation"></textarea>
                         </div>
-                    </div>
-                </form>
-            </div>
-
-            <div class="divider-vert col-1 hide-lg"></div>
-
-            <div class="column col-6 col-lg-12">
-                <form class="form-horizontal">
-                    <div class="form-group">
-                        <div class="col-4 col-sm-12">
-                        </div>
-                        <button type="button" class="btn col-8 col-sm-12" v-on:click="newInvoice">
-                            New invoice
-                        </button>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-4 col-sm-12">
-                            <select class="form-select" id="invoice-select" v-model="selectedInvoiceId">
-                                <option selected="selected" value="">&lt;select&gt;</option>
-                                <option v-for="invoice in invoices" v-bind:value="invoice.id">
-                                    {{ invoice.invoiceNumber }}
-                                </option>
-                            </select>
-                        </div>
-                        <button type="button" class="btn col-8 col-sm-12" v-on:click="copyInvoice" :disabled="selectedInvoiceId === ''">
-                            Copy invoice
-                        </button>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-4 col-sm-12">
-                            <select class="form-select" id="month-select" v-model="selectedMonth">
-                                <option v-for="(month, index) in months" v-bind:value="index">
-                                    {{ month.name }}
-                                </option>
-                            </select>
-                        </div>
-                        <button type="button" class="btn col-8 col-sm-12" id="create-monthly-invoice-lines" v-on:click="createMonthlyInvoiceLines">Create
-                            monthly invoice lines
-                        </button>
                     </div>
                 </form>
             </div>
@@ -178,12 +181,6 @@
                         </tr>
                     </tbody>
                 </table>
-            </div>
-        </div>
-
-        <div class="columns">
-            <div class="col-12">
-                <button type="button" class="btn" id="create-invoice-button" v-on:click="createInvoice" :disabled="!invoiceIsValid()">Create</button>
             </div>
         </div>
     </div>

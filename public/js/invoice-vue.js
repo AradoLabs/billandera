@@ -69,6 +69,9 @@ var invoiceApp = new Vue({
         },
 
         createInvoice: function() {
+            if (!this.invoiceIsValid()) return;
+            if (!window.confirm("Create invoice to Procountor?")) return;
+
             this.updateInvoiceRows();
 
             new ProcountorApiClient(this.baseUrl, this.refreshAuthentication)
@@ -175,10 +178,6 @@ var invoiceApp = new Vue({
 
         refreshAuthentication: function() {
             return fetch("/refreshAuth", { method: "GET" });
-        },
-
-        logout: function() {
-            fetch("/logout", { method: "GET" });
         }
     },
 
