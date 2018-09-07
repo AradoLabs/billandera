@@ -51,6 +51,12 @@ class BillanderaServer {
             });
     }
 
+    logout(request, response) {
+        request.session.refreshToken = "";
+        response.cookie("access_token", "", { maxAge: 0 });
+        response.redirect("/");
+    }
+
     setBearerTokenCookie(response, tokenResponse) {
         response.cookie("access_token", tokenResponse.token, { maxAge: 1000 * tokenResponse.lifetimeInSeconds });
     }

@@ -29,6 +29,10 @@ app.get("/refreshAuth", (request, response) => {
     b.refreshAuthenticationToken(request, response).then(() => response.end());
 });
 
+app.get("/logout", (request, response) => {
+    b.logout(request, response);
+});
+
 app.use((request, response, next) => {
     b.authenticate(request, response, next);
 });

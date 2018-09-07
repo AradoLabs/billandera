@@ -9,7 +9,7 @@ var invoiceApp = new Vue({
         selectedInvoiceId: "",
         selectedMonth: 0,
 
-        invoice: { counterParty: { counterPartyAddress: { name: "" } } },
+        invoice: new Invoice(),
         invoices: [],
         invoiceLineIdSeries: 1,
         products: [],
@@ -17,6 +17,7 @@ var invoiceApp = new Vue({
 
         months: [],
 
+        hideSuccess: true,
         hideError: true,
         errorMessages: []
     },
@@ -49,11 +50,18 @@ var invoiceApp = new Vue({
                 });
         },
 
-        getInvoice: function(id) {
+        newInvoice: function() {
+            this.invoice = new Invoice();
+            this.invoiceLines = [];
+        },
+
+        copyInvoice: function(id) {
             new ProcountorApiClient(this.baseUrl, this.refreshAuthentication)
                 .getInvoice(this.selectedInvoiceId)
                 .then(data => {
                     this.invoice = data;
+                    delete this.invoice.id;
+                    delete this.invoice.invoiceNumber;
                 })
                 .catch(error => {
                     this.addErrorMessage(error.message);
@@ -62,13 +70,12 @@ var invoiceApp = new Vue({
 
         createInvoice: function() {
             this.updateInvoiceRows();
-            delete this.invoice.id;
-            delete this.invoice.invoiceNumber;
 
             new ProcountorApiClient(this.baseUrl, this.refreshAuthentication)
-                .createInvoice(this.invoice)
+                .createInvoice()
                 .then(data => {
-                    this.invoice = data;
+                    this.invoice = new Invoice();
+                    this.hideSuccess = false;
                 })
                 .catch(error => {
                     this.addErrorMessage(error.message);
@@ -76,7 +83,6 @@ var invoiceApp = new Vue({
         },
 
         updateInvoiceRows: function() {
-            this.invoice.invoiceRows = [];
             this.invoiceLines.forEach(line => {
                 this.invoice.invoiceRows.push({
                     product: line.product.name,
@@ -169,6 +175,10 @@ var invoiceApp = new Vue({
 
         refreshAuthentication: function() {
             return fetch("/refreshAuth", { method: "GET" });
+        },
+
+        logout: function() {
+            fetch("/logout", { method: "GET" });
         }
     },
 

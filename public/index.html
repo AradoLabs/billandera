@@ -18,8 +18,12 @@
 
 <body>
     <div id="invoice-app" class="container billandera-container">
-        <h1>Billanderande!</h1>
 
+        <div class="columns">
+
+            <h1 class="col-11">Billanderande!</h1>
+            <a class="text-right col-1" href="logout">Logout</a>
+        </div>
         <div class="toast toast-error" v-bind:class="{ 'd-hide': hideError }">
             <button id="dismiss-errors" class="btn btn-clear float-right" v-on:click="dismissErrors()"></button>
             <ul>
@@ -27,83 +31,89 @@
             </ul>
         </div>
 
-        <div class="columns">
-            <div class="column col-5">
-                <form class="form-horizontal">
-
-                </form>
-            </div>
+        <div class="toast toast-success" v-bind:class="{ 'd-hide': hideSuccess }">
+            Invoice created succesfully
         </div>
 
         <div class="columns">
-            <div class="column col-5">
+            <div class="column col-5 col-lg-12">
                 <form class="form-horizontal">
-                    <div class="col-12">
-                        <h3>Invoice</h3>
-                    </div>
                     <div class="form-group">
-                        <div class="col-4">
+                        <div class="col-4 col-sm-12">
                             <label class="form-label" id="invoice-client-label">Client</label>
                         </div>
-                        <div class="col-8">
+                        <div class="col-8 col-sm-12">
                             <span disabledid="invoice-contact-client">{{ invoice.counterParty.counterPartyAddress.name }}</span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-4">
-                            <label class="form-label" id="invoice-contact-person-label" for="invoice-contact-person">Contact person</label>
+                        <div class="col-4 col-sm-12">
+                            <label class="form-label" id="invoice-contact-person-label" for="invoice-contact-person">Contact
+                                person
+                            </label>
                         </div>
-                        <div class="col-8">
+                        <div class="col-8 col-sm-12">
                             <input class="form-input" id="invoice-contact-person" v-model="invoice.counterParty.contactPersonName"></input>
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-4">
-                            <label class="form-label" id="invoice-order-reference-label" for="invoice-order-reference">Order reference</label>
+                        <div class="col-4 col-sm-12">
+                            <label class="form-label" id="invoice-order-reference-label" for="invoice-order-reference">Order
+                                reference
+                            </label>
                         </div>
-                        <div class="col-8">
+                        <div class="col-8 col-sm-12">
                             <input class="form-input" id="invoice-order-reference" v-model="invoice.orderReference"></input>
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-4">
-                            <label class="form-label" id="invoice-additional-information-label" for="invoice-additional-information">Additional information</label>
+                        <div class="col-4 col-sm-12">
+                            <label class="form-label" id="invoice-additional-information-label" for="invoice-additional-information">Additional
+                                information
+                            </label>
                         </div>
-                        <div class="col-8">
-                            <textarea class="form-input" id="invoice-additional-information" v-model="invoice.additionalInformation"></textarea>
+                        <div class="col-8 col-sm-12">
+                            <textarea class="form-input" id="invoice-additional-information" rows="5" v-model="invoice.additionalInformation"></textarea>
                         </div>
                     </div>
                 </form>
             </div>
 
-            <div class="divider-vert col-1"></div>
+            <div class="divider-vert col-1 hide-lg"></div>
 
-            <div class="column col-6">
+            <div class="column col-6 col-lg-12">
                 <form class="form-horizontal">
                     <div class="form-group">
-                        <div class="col-4">
+                        <div class="col-4 col-sm-12">
+                        </div>
+                        <button type="button" class="btn col-8 col-sm-12" v-on:click="newInvoice">
+                            New invoice
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-4 col-sm-12">
                             <select class="form-select" id="invoice-select" v-model="selectedInvoiceId">
-                                <option selected="selected" value="">&lt;select invoice to copy&gt;</option>
+                                <option selected="selected" value="">&lt;select&gt;</option>
                                 <option v-for="invoice in invoices" v-bind:value="invoice.id">
                                     {{ invoice.invoiceNumber }}
                                 </option>
                             </select>
                         </div>
-                        <div>
-                            <button type="button" class="btn" v-on:click="getInvoice" :disabled="selectedInvoiceId === ''">Copy</button>
-                        </div>
+                        <button type="button" class="btn col-8 col-sm-12" v-on:click="copyInvoice" :disabled="selectedInvoiceId === ''">
+                            Copy invoice
+                        </button>
                     </div>
                     <div class="form-group">
-                        <div class="col-4">
+                        <div class="col-4 col-sm-12">
                             <select class="form-select" id="month-select" v-model="selectedMonth">
                                 <option v-for="(month, index) in months" v-bind:value="index">
                                     {{ month.name }}
                                 </option>
                             </select>
                         </div>
-                        <div>
-                            <button type="button" class="btn" id="create-monthly-invoice-lines" v-on:click="createMonthlyInvoiceLines">Create monthly invoice lines</button>
-                        </div>
+                        <button type="button" class="btn col-8 col-sm-12" id="create-monthly-invoice-lines" v-on:click="createMonthlyInvoiceLines">Create
+                            monthly invoice lines
+                        </button>
                     </div>
                 </form>
             </div>
@@ -114,22 +124,25 @@
                 <table class="table table-striped" id="invoice-lines">
                     <thead>
                         <tr>
-                            <th class="col-1">#</th>
+                            <th class="">#</th>
+                            <th class=""></th>
                             <th class="col-3">Product</th>
                             <th class="col-2">Quantity</th>
                             <th class="col-4">Text</th>
                             <th class="col-1">Total</th>
-                            <th class="col-1"></th>
+                            <th class=""></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(invoiceLine, index) in invoiceLines" :key="invoiceLine.id">
                             <td>
                                 <span class="chip">{{ index + 1 }}</span>
-                                <button type="button" class="btn" v-on:click="moveInvoiceLineUp(index)">
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-action btn-sm" v-on:click="moveInvoiceLineUp(index)">
                                     <i class="icon icon-upward"></i>
                                 </button>
-                                <button type="button" class="btn" v-on:click="moveInvoiceLineDown(index)">
+                                <button type="button" class="btn btn-action btn-sm" v-on:click="moveInvoiceLineDown(index)">
                                     <i class="icon icon-downward"></i>
                                 </button>
                             </td>
@@ -154,9 +167,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                            <td colspan="4"></td>
                             <td>Invoice total</td>
                             <td>{{ invoiceTotalAmount() }} €</td>
                             <td>
@@ -170,8 +181,11 @@
             </div>
         </div>
 
-        <button type="button" class="btn" id="create-invoice-button" v-on:click="createInvoice" :disabled="!invoiceIsValid()">Create</button>
-    </div>
+        <div class="columns">
+            <div class="col-12">
+                <button type="button" class="btn" id="create-invoice-button" v-on:click="createInvoice" :disabled="!invoiceIsValid()">Create</button>
+            </div>
+        </div>
     </div>
 </body>
 <script src="js/lib/js.cookie.js"></script>

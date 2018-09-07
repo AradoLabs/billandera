@@ -1,5 +1,16 @@
 "use strict";
 
+class Invoice {
+    constructor() {
+        this.counterParty = {
+            counterPartyAddress: {
+                name: ""
+            }
+        };
+        this.invoiceRows = [];
+    }
+}
+
 class InvoiceLine {
     constructor(id, product) {
         this.id = id;
