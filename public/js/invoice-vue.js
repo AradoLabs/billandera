@@ -60,6 +60,7 @@ var invoiceApp = new Vue({
                 .getInvoice(this.selectedInvoiceId)
                 .then(data => {
                     this.invoice = data;
+                    this.invoice.date = new Date().toISOString().split("T")[0];
                     delete this.invoice.id;
                     delete this.invoice.invoiceNumber;
                 })
