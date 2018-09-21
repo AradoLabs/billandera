@@ -76,9 +76,9 @@ var invoiceApp = new Vue({
             this.updateInvoiceRows();
 
             new ProcountorApiClient(this.baseUrl, this.refreshAuthentication)
-                .createInvoice()
+                .createInvoice(this.invoice)
                 .then(data => {
-                    this.invoice = new Invoice();
+                    this.newInvoice();
                     this.hideSuccess = false;
                 })
                 .catch(error => {
@@ -87,6 +87,7 @@ var invoiceApp = new Vue({
         },
 
         updateInvoiceRows: function() {
+            this.invoice.invoiceRows = [];
             this.invoiceLines.forEach(line => {
                 this.invoice.invoiceRows.push({
                     product: line.product.name,
