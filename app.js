@@ -9,6 +9,7 @@ const BillanderaServer = require("./billandera-server");
 
 const app = express();
 const b = new BillanderaServer();
+const port = process.env.PORT || 8080;
 
 app.use(cookieParser());
 app.use(
@@ -39,4 +40,4 @@ app.use((request, response, next) => {
 
 app.use(express.static("public"));
 
-app.listen(8080);
+app.listen(port);
