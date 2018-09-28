@@ -1,0 +1,27 @@
+{
+    "name": "billandera",
+    "version": "0.18.928",
+    "description": "Procountor API integration for smooth invoicing!",
+    "main": "app.js",
+    "dependencies": {
+        "cookie-parser": "^1.4.3",
+        "express": "^4.16.3",
+        "express-session": "^1.15.6",
+        "memorystore": "^1.6.0",
+        "node-fetch": "^2.2.0"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/AradoLabs/billandera.git"
+    },
+    "author": "Arado",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/AradoLabs/billandera/issues"
+    },
+    "homepage": "https://github.com/AradoLabs/billandera#readme"
+}
