@@ -7,9 +7,14 @@ const MemoryStore = require("memorystore")(session);
 
 const BillanderaServer = require("./billandera-server");
 
-const app = express();
-const b = new BillanderaServer();
 const port = process.env.PORT || 8080;
+const procountorApiBaseUrl = process.env.PROCOUNTOR_API_BASE_URL;
+const redirectUrl = process.env.REDIRECT_URL;
+const clientId = process.env.CLIENT_ID;
+const clientSecret = process.env.CLIENT_SECRET;
+
+const app = express();
+const b = new BillanderaServer(procountorApiBaseUrl, redirectUrl, clientId, clientSecret);
 
 app.use(cookieParser());
 app.use(

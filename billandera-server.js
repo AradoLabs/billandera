@@ -4,13 +4,8 @@ const url = require("url");
 const ProcountorAuthentication = require("./procountor-authentication");
 
 class BillanderaServer {
-    constructor() {
-        var baseUrl = "https://api-test.procountor.com";
-        var redirectUri = "http://localhost:8080/auth";
-        var clientId = "aradoTestClient";
-        var clientSecret = "testsecret_u5gqQGYGD3FMDXMZXcMe";
-
-        this.authenticator = new ProcountorAuthentication(baseUrl, clientId, clientSecret, redirectUri);
+    constructor(procountorApiBaseUrl, redirectUrl, clientId, clientSecret) {
+        this.authenticator = new ProcountorAuthentication(procountorApiBaseUrl, clientId, clientSecret, redirectUrl);
     }
 
     authenticationCallback(request, response) {
