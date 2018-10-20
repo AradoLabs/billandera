@@ -4,7 +4,7 @@ var invoiceApp = new Vue({
     el: "#invoice-app",
 
     data: {
-        baseUrl: "https://api-test.procountor.com/api/",
+        procountorApiClient: {},
 
         selectedInvoiceId: "",
         selectedMonth: 0,
@@ -23,8 +23,14 @@ var invoiceApp = new Vue({
     },
 
     methods: {
+        getBaseUrl: function() {
+            return fetch("/procountorApiUrl", { method: "GET" }).then(response => {
+                return response.text();
+            });
+        },
+
         getProducts: function() {
-            new ProcountorApiClient(this.baseUrl, this.refreshAuthentication)
+            this.procountorApiClient
                 .getProducts()
                 .then(data => {
                     this.products = data.products;
@@ -35,7 +41,7 @@ var invoiceApp = new Vue({
         },
 
         getInvoices: function() {
-            new ProcountorApiClient(this.baseUrl, this.refreshAuthentication)
+            this.procountorApiClient
                 .getInvoices()
                 .then(data => {
                     data.results.forEach(element =>
@@ -56,7 +62,7 @@ var invoiceApp = new Vue({
         },
 
         copyInvoice: function(id) {
-            new ProcountorApiClient(this.baseUrl, this.refreshAuthentication)
+            this.procountorApiClient
                 .getInvoice(this.selectedInvoiceId)
                 .then(data => {
                     this.invoice = data;
@@ -75,7 +81,7 @@ var invoiceApp = new Vue({
 
             this.updateInvoiceRows();
 
-            new ProcountorApiClient(this.baseUrl, this.refreshAuthentication)
+            this.procountorApiClient
                 .createInvoice(this.invoice)
                 .then(data => {
                     this.newInvoice();
@@ -184,8 +190,12 @@ var invoiceApp = new Vue({
     },
 
     beforeMount() {
-        this.getInvoices();
-        this.getProducts();
+        this.getBaseUrl().then(url => {
+            this.procountorApiClient = new ProcountorApiClient(url, this.refreshAuthentication);
+            this.getInvoices();
+            this.getProducts();
+        });
+
         this.initializeMonths();
     }
 });

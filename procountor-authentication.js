@@ -13,7 +13,7 @@ class ProcountorAuthentication {
     loginUrl() {
         return (
             this.baseUrl +
-            "/login?response_type=code&client_id=" +
+            "login?response_type=code&client_id=" +
             this.clientId +
             "&redirect_uri=" +
             this.redirectUri +
@@ -26,7 +26,7 @@ class ProcountorAuthentication {
 
         return fetch(
             this.baseUrl +
-                "/api/oauth/token?grant_type=authorization_code&redirect_uri=" +
+                "api/oauth/token?grant_type=authorization_code&redirect_uri=" +
                 encodedRedirectUri +
                 "&code=" +
                 code +
@@ -57,7 +57,7 @@ class ProcountorAuthentication {
     getTokenWithRefreshToken(refreshToken) {
         return fetch(
             this.baseUrl +
-                "/api/oauth/token?grant_type=refresh_token&refresh_token=" +
+                "api/oauth/token?grant_type=refresh_token&refresh_token=" +
                 refreshToken +
                 "&client_id=" +
                 this.clientId +

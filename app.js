@@ -1,5 +1,6 @@
 "use strict";
 
+require("dotenv").config();
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
@@ -41,6 +42,10 @@ app.get("/logout", (request, response) => {
 
 app.use((request, response, next) => {
     b.authenticate(request, response, next);
+});
+
+app.get("/procountorApiUrl", (request, response) => {
+    response.end(procountorApiBaseUrl + "api/");
 });
 
 app.use(express.static("public"));
