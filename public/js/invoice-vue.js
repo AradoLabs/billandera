@@ -45,9 +45,12 @@ var invoiceApp = new Vue({
                 .getInvoices()
                 .then(data => {
                     data.results.forEach(element =>
-                        this.invoices.push({
-                            invoiceNumber: element.invoiceNumber,
-                            id: element.id
+                        this.procountorApiClient.getInvoice(element.id).then(invoice => {
+                            this.invoices.push({
+                                invoiceNumber: invoice.invoiceNumber,
+                                id: invoice.id,
+                                notes: invoice.notes
+                            });
                         })
                     );
                 })

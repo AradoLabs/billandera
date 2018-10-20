@@ -43,7 +43,7 @@
                             <select class="form-select" id="invoice-select" v-model="selectedInvoiceId">
                                 <option selected="selected" value="">&lt;select&gt;</option>
                                 <option v-for="invoice in invoices" v-bind:value="invoice.id">
-                                    {{ invoice.invoiceNumber }}
+                                    {{ invoice.invoiceNumber }} {{ invoice.notes }}
                                 </option>
                             </select>
                         </div>
