@@ -13,6 +13,7 @@ const procountorApiBaseUrl = process.env.PROCOUNTOR_API_BASE_URL;
 const redirectUrl = process.env.REDIRECT_URL;
 const clientId = process.env.CLIENT_ID;
 const clientSecret = process.env.CLIENT_SECRET;
+const useHttps = process.env.USE_HTTPS === "true";
 
 const app = express();
 const b = new BillanderaServer(procountorApiBaseUrl, redirectUrl, clientId, clientSecret);
@@ -22,7 +23,7 @@ app.use(
     session({
         store: new MemoryStore({ checkPeriod: 24 * 60 * 60 * 1000 }),
         secret: "very secret stuff",
-        cookie: { secure: false }, // set true for prod
+        cookie: { secure: useHttps },
         resave: false,
         saveUninitialized: true
     })
