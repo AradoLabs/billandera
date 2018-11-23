@@ -20,14 +20,14 @@ class InvoiceLine {
     }
 
     get total() {
-        if (this.product !== null) {
+        if (this.product) {
             return this.product.price * this.quantity;
         }
         return 0;
     }
 
     get isValid() {
-        return this.product !== null && this.quantity !== 0;
+        return this.product && this.quantity !== 0;
     }
 }
 
