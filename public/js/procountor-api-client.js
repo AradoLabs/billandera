@@ -18,6 +18,10 @@ class ProcountorApiClient {
         return this.get("products");
     }
 
+    getBusinessPartner(id) {
+        return this.get("businesspartners/" + id);
+    }
+
     createInvoice(invoice) {
         return this.post("invoices", invoice);
     }

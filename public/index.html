@@ -160,6 +160,21 @@
                         </div>
                         <div class="form-group">
                             <div class="col-4 col-sm-12">
+                                <label class="form-label" id="invoice-duedate-label" for="invoice-duedate">
+                                    Due date
+                                </label>
+                            </div>
+                            <div class="col-8 col-sm-12">
+                                <input
+                                    class="form-input"
+                                    id="invoice-duedate"
+                                    type="date"
+                                    v-model="invoice.paymentInfo.dueDate"
+                                />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-4 col-sm-12">
                                 <label
                                     class="form-label"
                                     id="invoice-additional-information-label"

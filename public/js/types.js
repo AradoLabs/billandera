@@ -7,6 +7,7 @@ class Invoice {
                 name: ""
             }
         };
+        this.paymentInfo = {};
         this.invoiceRows = [];
     }
 }

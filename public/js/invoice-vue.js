@@ -14,6 +14,7 @@ var invoiceApp = new Vue({
         invoiceLineIdSeries: 1,
         products: [],
         invoiceLines: [],
+        paymentTerm: 0,
 
         months: [],
 
@@ -59,6 +60,12 @@ var invoiceApp = new Vue({
                 });
         },
 
+        getPaymentTerm: function(businessPartnerId) {
+            this.procountorApiClient.getBusinessPartner(businessPartnerId).then(data => {
+                this.paymentTerm = Number(data.paymentInfo.paymentTermDays);
+            });
+        },
+
         newInvoice: function() {
             this.invoice = new Invoice();
             this.invoiceLines = [];
@@ -72,6 +79,9 @@ var invoiceApp = new Vue({
                     this.invoice.date = new Date().toISOString().split("T")[0];
                     delete this.invoice.id;
                     delete this.invoice.invoiceNumber;
+
+                    this.getPaymentTerm(data.partnerId);
+                    this.updateDueDate();
                 })
                 .catch(error => {
                     this.addErrorMessage(error.message);
@@ -110,6 +120,12 @@ var invoiceApp = new Vue({
                     discountPercent: 0
                 });
             });
+        },
+
+        updateDueDate: function() {
+            var dueDate = new Date(this.invoice.date);
+            dueDate.setDate(dueDate.getDate() + this.paymentTerm);
+            this.invoice.paymentInfo.dueDate = dueDate.toISOString().split("T")[0];
         },
 
         initializeMonths: function() {
