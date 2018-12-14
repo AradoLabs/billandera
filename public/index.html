@@ -188,8 +188,8 @@
                             <tr>
                                 <th class="">#</th>
                                 <th class=""></th>
-                                <th class="col-3">Product</th>
-                                <th class="col-2">Quantity</th>
+                                <th class="col-4">Product</th>
+                                <th class="col-1">Quantity</th>
                                 <th class="col-4">Text</th>
                                 <th class="col-1">Total</th>
                                 <th class=""></th>
@@ -219,7 +219,8 @@
                                 <td>
                                     <select class="form-select" v-model="invoiceLine.product">
                                         <option v-for="product in products" v-bind:value="product">
-                                            {{ product.name }}, {{ product.price }} € / {{ product.unit }}
+                                            {{ product.code }} {{ product.name }}, {{ product.price }} € /
+                                            {{ product.unit.toLowerCase() }}
                                         </option>
                                     </select>
                                 </td>
