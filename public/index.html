@@ -155,7 +155,13 @@
                                 </label>
                             </div>
                             <div class="col-8 col-sm-12">
-                                <input class="form-input" id="invoice-date" type="date" v-model="invoice.date" />
+                                <input
+                                    class="form-input"
+                                    id="invoice-date"
+                                    type="date"
+                                    v-model="invoice.date"
+                                    v-on:change="updateDueDate()"
+                                />
                             </div>
                         </div>
                         <div class="form-group">

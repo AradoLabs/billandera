@@ -61,7 +61,7 @@ var invoiceApp = new Vue({
         },
 
         getPaymentTerm: function(businessPartnerId) {
-            this.procountorApiClient.getBusinessPartner(businessPartnerId).then(data => {
+            return this.procountorApiClient.getBusinessPartner(businessPartnerId).then(data => {
                 this.paymentTerm = Number(data.paymentInfo.paymentTermDays);
             });
         },
@@ -80,8 +80,9 @@ var invoiceApp = new Vue({
                     delete this.invoice.id;
                     delete this.invoice.invoiceNumber;
 
-                    this.getPaymentTerm(data.partnerId);
-                    this.updateDueDate();
+                    this.getPaymentTerm(data.partnerId).then(() => {
+                        this.updateDueDate();
+                    });
                 })
                 .catch(error => {
                     this.addErrorMessage(error.message);
@@ -190,6 +191,9 @@ var invoiceApp = new Vue({
             this.invoiceLines.forEach(invoiceLine => {
                 if (!invoiceLine.isValid) isValid = false;
             });
+            if (this.invoice.date <= this.invoice.paymentInfo.dueDate) {
+                isValid = false;
+            }
             return isValid;
         },
 
