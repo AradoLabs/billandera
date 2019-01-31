@@ -201,14 +201,15 @@ var invoiceApp = new Vue({
         invoiceIsValid: function() {
             if (this.invoiceLines.length === 0) return false;
 
-            var isValid = true;
             this.invoiceLines.forEach(invoiceLine => {
-                if (!invoiceLine.isValid) isValid = false;
+                if (!invoiceLine.isValid) return false;
             });
+
             if (this.invoice.paymentInfo.dueDate <= this.invoice.date) {
-                isValid = false;
+                return false;
             }
-            return isValid;
+
+            return true;
         },
 
         addErrorMessage: function(message) {
