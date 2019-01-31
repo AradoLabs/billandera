@@ -25,9 +25,11 @@ var invoiceApp = new Vue({
 
     methods: {
         getBaseUrl: function() {
-            return fetch("/procountorApiUrl", { method: "GET" }).then(response => {
-                return response.text();
-            });
+            return fetch("/procountorApiUrl", { method: "GET" }).then(
+                response => {
+                    return response.text();
+                }
+            );
         },
 
         getProducts: function() {
@@ -46,13 +48,15 @@ var invoiceApp = new Vue({
                 .getInvoices()
                 .then(data => {
                     data.results.forEach(element =>
-                        this.procountorApiClient.getInvoice(element.id).then(invoice => {
-                            this.invoices.push({
-                                invoiceNumber: invoice.invoiceNumber,
-                                id: invoice.id,
-                                notes: invoice.notes
-                            });
-                        })
+                        this.procountorApiClient
+                            .getInvoice(element.id)
+                            .then(invoice => {
+                                this.invoices.push({
+                                    invoiceNumber: invoice.invoiceNumber,
+                                    id: invoice.id,
+                                    notes: invoice.notes
+                                });
+                            })
                     );
                 })
                 .catch(error => {
@@ -61,9 +65,11 @@ var invoiceApp = new Vue({
         },
 
         getPaymentTerm: function(businessPartnerId) {
-            return this.procountorApiClient.getBusinessPartner(businessPartnerId).then(data => {
-                this.paymentTerm = Number(data.paymentInfo.paymentTermDays);
-            });
+            return this.procountorApiClient
+                .getBusinessPartner(businessPartnerId)
+                .then(data => {
+                    this.paymentTerm = Number(data.paymentInfo.paymentTermDays);
+                });
         },
 
         newInvoice: function() {
@@ -126,7 +132,9 @@ var invoiceApp = new Vue({
         updateDueDate: function() {
             var dueDate = new Date(this.invoice.date);
             dueDate.setDate(dueDate.getDate() + this.paymentTerm);
-            this.invoice.paymentInfo.dueDate = dueDate.toISOString().split("T")[0];
+            this.invoice.paymentInfo.dueDate = dueDate
+                .toISOString()
+                .split("T")[0];
         },
 
         initializeMonths: function() {
@@ -146,7 +154,9 @@ var invoiceApp = new Vue({
         },
 
         createInvoiceLine: function() {
-            this.invoiceLines.push(new InvoiceLine(this.invoiceLineIdSeries++, null));
+            this.invoiceLines.push(
+                new InvoiceLine(this.invoiceLineIdSeries++, null)
+            );
         },
 
         createMonthlyInvoiceLines: function() {
@@ -156,8 +166,12 @@ var invoiceApp = new Vue({
             var weeks = Weeks.getStartAndEndDaysForMonth(month, year);
 
             weeks.forEach(week => {
-                var invoiceLine = new InvoiceLine(this.invoiceLineIdSeries++, null);
-                invoiceLine.text = week.start + ". - " + week.end + "." + month + "." + year;
+                var invoiceLine = new InvoiceLine(
+                    this.invoiceLineIdSeries++,
+                    null
+                );
+                invoiceLine.text =
+                    week.start + ". - " + week.end + "." + month + "." + year;
 
                 this.invoiceLines.push(invoiceLine);
             });
@@ -191,7 +205,7 @@ var invoiceApp = new Vue({
             this.invoiceLines.forEach(invoiceLine => {
                 if (!invoiceLine.isValid) isValid = false;
             });
-            if (this.invoice.date <= this.invoice.paymentInfo.dueDate) {
+            if (this.invoice.paymentInfo.dueDate <= this.invoice.date) {
                 isValid = false;
             }
             return isValid;
@@ -214,7 +228,10 @@ var invoiceApp = new Vue({
 
     beforeMount() {
         this.getBaseUrl().then(url => {
-            this.procountorApiClient = new ProcountorApiClient(url, this.refreshAuthentication);
+            this.procountorApiClient = new ProcountorApiClient(
+                url,
+                this.refreshAuthentication
+            );
             this.getInvoices();
             this.getProducts();
         });
