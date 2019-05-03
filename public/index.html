@@ -29,30 +29,42 @@
                 </ul>
             </div>
 
-            <div class="toast toast-success" v-bind:class="{ 'd-hide': hideSuccess }">Invoice created succesfully</div>
+            <div class="toast toast-success" v-bind:class="{ 'd-hide': hideSuccess }">
+                Invoice created succesfully
+            </div>
 
             <div class="columns">
                 <div class="column col-6 col-lg-12">
                     <form class="form-horizontal">
                         <div class="form-group">
                             <div class="col-4 col-sm-12">
+                                <label class="form-label" id="invoice-select">Select invoice to copy</label>
+                            </div>
+                            <div class="col-4 col-sm-12">
                                 <select class="form-select" id="invoice-select" v-model="selectedInvoiceId">
                                     <option selected="selected" value="">&lt;select&gt;</option>
                                     <option v-for="invoice in invoices" v-bind:value="invoice.id">
-                                        {{ invoice.invoiceNumber }} {{ invoice.notes }}
+                                        {{ invoice.invoiceNumber }}
+                                        {{ invoice.notes }}
                                     </option>
                                 </select>
                             </div>
                             <button
                                 type="button"
-                                class="btn col-8 col-sm-12"
+                                class="btn col-3 col-sm-12 col-ml-auto"
                                 v-on:click="copyInvoice"
                                 :disabled="selectedInvoiceId === ''"
                             >
-                                Copy invoice
+                                Copy
                             </button>
                         </div>
+
+                        <div class="divider col-12"></div>
+
                         <div class="form-group">
+                            <div class="col-4 col-sm-12">
+                                <label class="form-label" for="month-select">Create monthly invoice lines for</label>
+                            </div>
                             <div class="col-4 col-sm-12">
                                 <select class="form-select" id="month-select" v-model="selectedMonth">
                                     <option v-for="(month, index) in months" v-bind:value="index">
@@ -60,15 +72,32 @@
                                     </option>
                                 </select>
                             </div>
+                        </div>
+                        <div class="input-group">
+                            <div class="col-4 col-sm-12">
+                                <label class="form-label" for="product-select"> - using product</label>
+                            </div>
+                            <div class="col-4 col-sm-12">
+                                <select class="form-select" id="product-select" v-model="selectedProduct">
+                                    <option value="-1">&lt;none&gt;</option>
+                                    <option v-for="(product, index) in products" v-bind:value="index">
+                                        {{ product.code }} {{ product.name }}, {{ product.price }} € /
+                                        {{ product.unit.toLowerCase() }}
+                                    </option>
+                                </select>
+                            </div>
                             <button
                                 type="button"
-                                class="btn col-8 col-sm-12"
+                                class="btn col-3 col-sm-12 col-ml-auto"
                                 id="create-monthly-invoice-lines"
                                 v-on:click="createMonthlyInvoiceLines"
                             >
-                                Create monthly invoice lines
+                                Create
                             </button>
                         </div>
+
+                        <div class="divider col-12"></div>
+
                         <div class="form-group">
                             <button type="button" class="btn col-8 col-sm-12 col-ml-auto" v-on:click="newInvoice">
                                 Reset
@@ -240,7 +269,8 @@
                                 <td>
                                     <select class="form-select" v-model="invoiceLine.product">
                                         <option v-for="product in products" v-bind:value="product">
-                                            {{ product.code }} {{ product.name }}, {{ product.price }} € /
+                                            {{ product.code }}
+                                            {{ product.name }}, {{ product.price }} € /
                                             {{ product.unit.toLowerCase() }}
                                         </option>
                                     </select>
@@ -254,7 +284,9 @@
                                         v-model.number="invoiceLine.quantity"
                                     />
                                 </td>
-                                <td><input class="form-input" type="text" v-model="invoiceLine.text" /></td>
+                                <td>
+                                    <input class="form-input" type="text" v-model="invoiceLine.text" />
+                                </td>
                                 <td>{{ invoiceLine.total }} €</td>
                                 <td>
                                     <button type="button" class="btn" v-on:click="removeInvoiceLine(index)">

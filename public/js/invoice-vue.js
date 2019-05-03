@@ -8,6 +8,7 @@ var invoiceApp = new Vue({
 
         selectedInvoiceId: "",
         selectedMonth: 0,
+        selectedProduct: -1,
 
         invoice: new Invoice(),
         invoices: [],
@@ -167,7 +168,7 @@ var invoiceApp = new Vue({
             var weeks = Weeks.getStartAndEndDaysForMonth(month, year);
 
             weeks.forEach(week => {
-                var invoiceLine = new InvoiceLine(this.invoiceLineIdSeries++, null);
+                var invoiceLine = new InvoiceLine(this.invoiceLineIdSeries++, this.products[this.selectedProduct]);
                 invoiceLine.text = week.start + ". - " + week.end + "." + month + "." + year;
 
                 this.invoiceLines.push(invoiceLine);
