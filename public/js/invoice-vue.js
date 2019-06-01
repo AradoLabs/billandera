@@ -37,7 +37,7 @@ var invoiceApp = new Vue({
                 .then(data => {
                     this.products = data.products;
                     this.products.sort((a, b) => {
-                        return a < b ? -1 : 1;
+                        return a.code < b.code ? -1 : 1;
                     });
                 })
                 .catch(error => {
